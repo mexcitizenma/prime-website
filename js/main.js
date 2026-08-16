@@ -213,6 +213,34 @@
     });
   }
 
+  /* -------------------------------------- service preselect from URL -- */
+  /* The services page links here as contact.html?service=Interior%20Painting
+     #estimate-form. Match the option by its own text so the value submitted to
+     Netlify stays the readable label, and so the Spanish page works with the
+     Spanish labels. Comparison ignores case, accents and extra spaces. */
+  function initServicePreselect() {
+    var param = new URLSearchParams(window.location.search).get('service');
+    if (!param) return;
+
+    function norm(text) {
+      var out = String(text).trim().toLowerCase().replace(/\s+/g, ' ');
+      if (out.normalize) out = out.normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+      return out;
+    }
+
+    var wanted = norm(param);
+    var selects = document.querySelectorAll('select[name="service"]');
+
+    for (var i = 0; i < selects.length; i++) {
+      var options = selects[i].options;
+      for (var j = 0; j < options.length; j++) {
+        if (options[j].value === '' || norm(options[j].text) !== wanted) continue;
+        selects[i].selectedIndex = j;
+        break;
+      }
+    }
+  }
+
   /* ------------------------------------------------- reveal on scroll -- */
   function initReveal() {
     var items = document.querySelectorAll('.reveal');
@@ -241,6 +269,7 @@
     initGalleryFallback();
     initGalleryFilter();
     initEstimateForms();
+    initServicePreselect();
     initReveal();
   }
 

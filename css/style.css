@@ -679,6 +679,9 @@ li { margin-bottom: .4rem; }
 .town-note { margin: 0; font-size: .95rem; color: var(--ink-soft); }
 
 /* --------------------------------------------------------------- forms --- */
+/* Services page links land here (contact.html?service=…#estimate-form),
+   so keep the sticky header from covering the heading. */
+#estimate-form { scroll-margin-top: calc(var(--header-h) + 16px); }
 .form { display: grid; gap: 14px; }
 .field { display: grid; gap: 6px; }
 .field label { font-weight: 700; font-size: .92rem; color: var(--navy-800); }
