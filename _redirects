@@ -1,0 +1,21 @@
+# Cloudflare Pages redirects.
+#
+# Eleventy builds the blog into _site/, but the marketing pages (index.html,
+# services.html, css/, images/) live at the repo root, so the Pages "build
+# output directory" has to stay "/" and _site/ ends up as a subfolder of the
+# deployed site. These rewrites hide that: /blog/... is served from
+# /_site/blog/... with a 200, so the URL the visitor sees never changes.
+#
+# This is the Cloudflare equivalent of the [[redirects]] blocks in
+# netlify.toml. Keep the two in sync until the Netlify site is retired --
+# primeprowork.com still resolves to Netlify as of 2026-08-16.
+#
+# Exact paths first, then the splats: a request for /blog (no trailing slash)
+# must not fall through to the SPA fallback, which is what serves the
+# homepage -- with its root-relative links -- under the /blog/ prefix today.
+
+/blog                 /_site/blog/                    200
+/es/blog              /_site/es/blog/                 200
+
+/es/blog/*            /_site/es/blog/:splat           200
+/blog/*               /_site/blog/:splat              200
