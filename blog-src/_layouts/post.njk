@@ -22,7 +22,7 @@
 {%- set cat = category | category(lang) -%}
 {%- set cats = feed | usedCategories(lang) -%}
 {%- set hero = image or cat.image -%}
-{%- set related = feed | relatedPosts({ slug: slug, category: category }, 4) -%}
+{%- set related = feed | relatedPosts({ slug: slug, category: category }, 2) -%}
 {%- set published = page.date | isoDate -%}
 <!DOCTYPE html>
 <html lang="{{ lang }}">

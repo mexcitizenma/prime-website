@@ -7,6 +7,7 @@ produced by blog_pipeline.py from hardcoded data, so a hallucinated link can
 never reach the site.
 """
 
+import argparse
 import json
 import os
 import re
@@ -144,13 +145,17 @@ REQUIRED FAQ SECTION (second to last thing in the article)
   <h3>The question?</h3><p>A direct 2-4 sentence answer.</p>
 - Answer the question in the first sentence. No lists inside FAQ answers.
 
-EXTERNAL LINKS — STRICT
-- You may cite 1-2 sources, and ONLY from this list:
+EXTERNAL LINKS — REQUIRED, AND STRICT
+- You MUST cite at least 1 and at most 2 sources, and ONLY from this list:
 {sources}
-- Link to the domain root or the exact URL shown above. NEVER build a deeper URL
-  by guessing a path — those break.
+- Use the URL exactly as written above. Do NOT add a path, query or fragment —
+  a deeper URL you infer will 404, and the build will strip the link.
+  Correct:   <a href="https://www.epa.gov/">the EPA</a>
+  Rejected:  <a href="https://www.epa.gov/lead/rrp-rule">the EPA RRP rule</a>
+- Put each citation inside a sentence where it supports a factual claim
+  (a regulation, a health guideline, a material spec). Do not add a link list.
 - Never link to another painting company, contractor, or home-services business.
-- Maximum 2 external links in the entire article.
+- A draft with zero links from this list is rejected and regenerated.
 
 PLACEHOLDERS — insert these two markers, exactly as written, once each
 - {bp.MARKER_SERVICE} — put this inside a sentence where it is natural to point the
@@ -181,7 +186,7 @@ Return ONLY valid JSON (no markdown fences, no commentary):
 
 # ---------------------------------------------------------------- generate ---
 
-def generate_article(title, lang, category, max_attempts=2):
+def generate_article(title, lang, category, inline_image=None, max_attempts=2):
     """Draft, run the deterministic pass, and retry once on a hard failure."""
     correction = None
     last = None
@@ -197,12 +202,16 @@ def generate_article(title, lang, category, max_attempts=2):
             correction = "your response was not valid JSON"
             continue
 
-        processed = bp.build_body(data.get("detail", ""), category, lang)
+        processed = bp.build_body(
+            data.get("detail", ""), category, lang,
+            inline_image=inline_image,
+            inline_alt=bp.photo_alt_inline(category, lang, title))
         seo_title = bp.trim_seo_title(data.get("seo_title"), title)
         last = (data, processed, seo_title)
 
         problem = bp.needs_regeneration(processed["body"], seo_title,
-                                        len(processed["faq"]))
+                                        len(processed["faq"]),
+                                        len(processed["external_kept"]))
         if not problem:
             return last
         print(f"  Draft {attempt} rejected: {problem}")
@@ -215,11 +224,12 @@ def generate_article(title, lang, category, max_attempts=2):
     return last
 
 
-def build_and_write(topic, slug, lang, category, date_str, image, published):
+def build_and_write(topic, slug, lang, category, date_str, image, inline_image,
+                    published):
     title = topic["en"] if lang == "en" else topic["es"]
     print(f"Generating {lang.upper()} post...")
 
-    result = generate_article(title, lang, category)
+    result = generate_article(title, lang, category, inline_image=inline_image)
     if not result:
         print(f"  Giving up on the {lang.upper()} post.")
         return published
@@ -238,7 +248,10 @@ def build_and_write(topic, slug, lang, category, date_str, image, published):
         print("  Service-link marker missing — link appended after the intro.")
     if not processed["cta_marker_used"]:
         print("  CTA marker missing — CTA placed at the mid-article heading.")
-    print(f"  FAQ pairs: {len(faq)} | words: {bp.word_count(body)}")
+    if inline_image and not processed["inline_photo_placed"]:
+        print("  In-body photo skipped — no second section outside the FAQ.")
+    print(f"  FAQ pairs: {len(faq)} | words: {bp.word_count(body)} | "
+          f"in-body photo: {processed['inline_photo_placed']}")
 
     related = bp.related_posts(published, slug, category, lang)
     if related:
@@ -257,28 +270,55 @@ def build_and_write(topic, slug, lang, category, date_str, image, published):
     return bp.record_published(published, entry)
 
 
-def main():
-    topics = load_topics()
-    topic = pick_topic(topics)
-    if not topic:
-        print("No topics remaining.")
-        return
-
+def write_topic(topic, published, force=False, langs=("en", "es")):
     slug = slugify(topic["en"])
     category = topic.get("category", "general")
     date_str = datetime.now().strftime("%Y-%m-%d")
+    print(f"Topic: {topic['en']}  [{category}]")
+    image, inline_image = bp.prepare_photos(category, slug)
+
+    for i, lang in enumerate(langs):
+        lang_dir = EN_DIR if lang == "en" else ES_DIR
+        if is_published(slug, lang_dir) and not force:
+            continue
+        if i:
+            time.sleep(10)
+        published = build_and_write(topic, slug, lang, category, date_str,
+                                    image, inline_image, published)
+    return published
+
+
+def main():
+    ap = argparse.ArgumentParser(description="Generate or regenerate a blog post.")
+    ap.add_argument("--slug", action="append", default=[],
+                    help="regenerate this slug instead of picking a new topic "
+                         "(repeatable; implies --force)")
+    ap.add_argument("--all", action="store_true",
+                    help="with --slug omitted, regenerate every published slug")
+    ap.add_argument("--lang", choices=["en", "es"],
+                    help="restrict to one language (default: both)")
+    ap.add_argument("--force", action="store_true",
+                    help="overwrite a post that already exists")
+    args = ap.parse_args()
+
+    topics = load_topics()
+    langs = (args.lang,) if args.lang else ("en", "es")
     published = bp.load_published()
 
-    print(f"Selected topic: {topic['en']}  [{category}]")
-    image = bp.prepare_photo(category, slug)
-
-    if not is_published(slug, EN_DIR):
-        published = build_and_write(topic, slug, "en", category, date_str,
-                                    image, published)
-        time.sleep(10)
-    if not is_published(slug, ES_DIR):
-        published = build_and_write(topic, slug, "es", category, date_str,
-                                    image, published)
+    if args.slug or args.all:
+        by_slug = {slugify(t["en"]): t for t in topics}
+        wanted = args.slug or sorted({r["slug"] for r in published})
+        missing = [s for s in wanted if s not in by_slug]
+        if missing:
+            print(f"Not in topics.json, skipping: {missing}")
+        for slug in [s for s in wanted if s in by_slug]:
+            published = write_topic(by_slug[slug], published, force=True, langs=langs)
+    else:
+        topic = pick_topic(topics)
+        if not topic:
+            print("No topics remaining.")
+            return
+        published = write_topic(topic, published, force=args.force, langs=langs)
 
     bp.save_published(published)
     print(f"published.json now lists {len(published)} posts.")

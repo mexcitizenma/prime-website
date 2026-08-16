@@ -37,6 +37,7 @@ def strip_injected(body):
     duplicates."""
     body = re.sub(r'<div class="blog-cta-inline">.*?</div>', "", body, flags=re.S)
     body = re.sub(r'<aside class="blog-related">.*?</aside>', "", body, flags=re.S)
+    body = re.sub(r'<figure class="blog-figure">.*?</figure>', "", body, flags=re.S)
     body = re.sub(r'</?section class="blog-faq">', "", body)
     body = re.sub(r"</section>\s*$", "", body.rstrip())
     # drop a service link paragraph appended by an earlier run
@@ -57,8 +58,11 @@ def main():
             slug = meta.get("slug") or path.stem
             title = meta.get("title", slug)
 
-            image = bp.prepare_photo(category, slug)
-            processed = bp.build_body(strip_injected(body), category, lang)
+            image, inline_image = bp.prepare_photos(category, slug)
+            processed = bp.build_body(
+                strip_injected(body), category, lang,
+                inline_image=inline_image,
+                inline_alt=bp.photo_alt_inline(category, lang, title))
             # A stored seo_title that is just a prefix of the title came from
             # an earlier retrofit, not from the model — re-derive it so an
             # improved trimmer actually takes effect.

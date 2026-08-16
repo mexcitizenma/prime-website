@@ -149,6 +149,49 @@ PHOTO_ALT = {
     ),
 }
 
+PHOTO_ALT_INLINE = {
+    "interior-painting": (
+        "Cut-in work along trim during an interior repaint",
+        "Trabajo de bordes en molduras durante un repintado interior",
+    ),
+    "exterior-painting": (
+        "Exterior siding mid-repaint on a New England home",
+        "Siding exterior a medio pintar en una casa de Nueva Inglaterra",
+    ),
+    "cabinet-painting": (
+        "Kitchen cabinet doors prepped for a new finish",
+        "Puertas de gabinete preparadas para un nuevo acabado",
+    ),
+    "epoxy-floors": (
+        "Epoxy coating being applied to a garage floor",
+        "Aplicación de recubrimiento epóxico en un piso de garaje",
+    ),
+    "laminate-flooring": (
+        "Laminate planks being fitted along a wall",
+        "Tablones laminados colocándose a lo largo de una pared",
+    ),
+    "pressure-washing": (
+        "Dirt lifting off a surface under a pressure washer",
+        "Suciedad desprendiéndose de una superficie con lavadora a presión",
+    ),
+    "siding-cleaning": (
+        "Siding part-way through a wash, clean and dirty side by side",
+        "Siding a medio lavar, lado limpio y sucio uno junto al otro",
+    ),
+    "fence": (
+        "Fence boards being stained in a back yard",
+        "Tablas de cerca siendo teñidas en un patio trasero",
+    ),
+    "handyman": (
+        "Close-up of a home repair being carried out",
+        "Primer plano de una reparación del hogar en curso",
+    ),
+    "general": (
+        "Home maintenance work underway on a New England property",
+        "Trabajo de mantenimiento en una propiedad de Nueva Inglaterra",
+    ),
+}
+
 MARKER_SERVICE = "[[SERVICE_LINK]]"
 MARKER_CTA = "[[CTA]]"
 
@@ -366,14 +409,18 @@ def extract_faq(html_body):
 
 # ------------------------------------------------------------- 6. photos -----
 
-def _first_photo(dirname):
+def _photos_in(dirname):
     d = STOCK_DIR / dirname
     if not d.is_dir():
-        return None
-    files = sorted(
+        return []
+    return sorted(
         p for p in d.iterdir()
         if p.is_file() and p.suffix.lower() in PHOTO_EXTS and not p.name.startswith(".")
     )
+
+
+def _first_photo(dirname):
+    files = _photos_in(dirname)
     return files[0] if files else None
 
 
@@ -426,29 +473,76 @@ def _resize(src, dst):
     return None
 
 
-def prepare_photo(category, slug):
-    """One photo per slug (shared by EN and ES). Returns a repo-relative path,
-    or None if neither the category folder nor general/ has anything usable."""
-    dst = WEB_DIR / f"blog-{slug}.jpg"
-    if dst.exists():
-        return str(dst)
+def prepare_photos(category, slug):
+    """Hero + one in-body photo, both from the first stock folder that has
+    anything. The in-body photo is a *different* file from that same folder, so
+    a post never shows the same image twice; folders holding a single photo
+    (garage-epoxy, deck-patio) simply get no second image.
 
+    Each output is cached independently -- an existing hero must not stop a
+    missing in-body photo from being generated."""
+    hero_dst = WEB_DIR / f"blog-{slug}.jpg"
+    inline_dst = WEB_DIR / f"blog-{slug}-2.jpg"
+
+    sources = []
     for dirname in CATEGORY_PHOTO_DIRS.get(category, []) + ["general"]:
-        src = _first_photo(dirname)
-        if not src:
-            continue
-        how = _resize(src, dst)
-        if how:
-            print(f"  Photo: {src} -> {dst} (via {how})")
+        files = _photos_in(dirname)
+        if files:
+            sources = files
+            print(f"  Photo folder: images/stock/{dirname}/ ({len(files)} file(s))")
+            break
+
+    def ensure(dst, index):
+        if dst.exists():
             return str(dst)
-        print(f"  Could not process {src}")
-    print(f"  No photo found for category '{category}' or general/ — skipping")
-    return None
+        if len(sources) <= index:
+            return None
+        if _resize(sources[index], dst):
+            print(f"  {sources[index]} -> {dst}")
+            return str(dst)
+        print(f"  Could not process {sources[index]}")
+        return None
+
+    hero = ensure(hero_dst, 0)
+    if not hero:
+        print(f"  No photo for category '{category}' or general/ — skipping")
+        return None, None
+    inline = ensure(inline_dst, 1)
+    if not inline:
+        print("  No second photo in that folder — no in-body image")
+    return hero, inline
 
 
 def photo_alt(category, lang, title):
     pair = PHOTO_ALT.get(category)
     return pair[li(lang)] if pair else title
+
+
+def photo_alt_inline(category, lang, title):
+    pair = PHOTO_ALT_INLINE.get(category)
+    return pair[li(lang)] if pair else photo_alt(category, lang, title)
+
+
+def inject_inline_photo(html_body, image, alt, faq_start=None):
+    """Place the second photo inside the article, right after the second <h2>
+    so it illustrates that section rather than floating between topics. Skipped
+    when there is no photo or the post is too short to have a second section
+    outside the FAQ."""
+    if not image:
+        return html_body, False
+    limit = faq_start if faq_start is not None else len(html_body)
+    heads = [m for m in re.finditer(r"<h2\b[^>]*>.*?</h2>", html_body, re.I | re.S)
+             if m.start() < limit]
+    if len(heads) < 2:
+        return html_body, False
+    at = heads[1].end()
+    fig = (
+        f'<figure class="blog-figure">'
+        f'<img src="/{image}" alt="{htmllib.escape(alt, quote=True)}" '
+        f'width="{PHOTO_W}" height="{PHOTO_H}" loading="lazy" decoding="async">'
+        f"</figure>"
+    )
+    return html_body[:at] + fig + html_body[at:], True
 
 
 # ---------------------------------------------------------- published.json ---
@@ -526,8 +620,13 @@ def copy_warnings(html_body, seo_title):
     return problems
 
 
-def needs_regeneration(html_body, seo_title, faq_count):
-    """Only the hard failures justify burning another API call."""
+def needs_regeneration(html_body, seo_title, faq_count, external_count=None):
+    """Only the hard failures justify burning another API call.
+
+    external_count is the number of whitelisted source links that survived
+    sanitising. Unlike the service link and the CTA, a citation has no
+    injectable fallback -- if the model omits it there is nothing to insert in
+    its place, so it has to be caught here or the post ships without sources."""
     text = strip_tags(html_body)
     if any(re.search(pat, text, re.I) for pat, _ in BANNED_PATTERNS[:3]):
         return "the draft mentions AI"
@@ -536,6 +635,9 @@ def needs_regeneration(html_body, seo_title, faq_count):
         return f"word count {wc} far outside {WORDS_MIN}-{WORDS_MAX}"
     if faq_count < FAQ_MIN:
         return f"only {faq_count} FAQ pairs (need {FAQ_MIN}-{FAQ_MAX})"
+    if external_count is not None and external_count < 1:
+        return ("no citation from the approved source list survived "
+                "(either none was included, or every link was off-whitelist)")
     return None
 
 
@@ -566,11 +668,13 @@ def trim_seo_title(candidate, fallback):
     return " ".join(words).rstrip(" ,;:-–—")
 
 
-def build_body(raw_html, category, lang):
+def build_body(raw_html, category, lang, inline_image=None, inline_alt=None):
     """The full deterministic pass: model prose in, publishable body out."""
     body = neutralize_template_syntax(raw_html.strip())
     body, kept, removed = sanitize_external_links(body)
     body, service_marked = inject_service_link(body, category, lang)
+    body, photo_placed = inject_inline_photo(
+        body, inline_image, inline_alt, faq_start=find_faq_start(body))
     body, cta_marked = inject_inline_cta(body, lang, faq_start=find_faq_start(body))
     body, faq = extract_faq(body)
     return {
@@ -580,6 +684,7 @@ def build_body(raw_html, category, lang):
         "external_removed": removed,
         "service_marker_used": service_marked,
         "cta_marker_used": cta_marked,
+        "inline_photo_placed": photo_placed,
     }
 
 

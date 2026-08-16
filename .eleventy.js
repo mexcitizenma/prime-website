@@ -53,18 +53,18 @@ module.exports = function (eleventyConfig) {
   );
 
   /* ---- "They Also Read" ----
-     Same-category posts first (newest first), then the rest of the blog as
-     filler, so a lone post in a young category still gets a full row. */
+     Same category only, newest first, at most two. Deliberately NOT padded
+     with posts from other categories: a short row, or none at all, beats
+     pointing the reader at something unrelated. The alsoRead macro hides the
+     whole section when this comes back empty. */
   eleventyConfig.addFilter("relatedPosts", (collection, current, limit) => {
-    const max = limit || 4;
+    const max = limit || 2;
     const slug = resolveCategory(current.category).slug;
-    const others = (collection || [])
+    return (collection || [])
       .filter(post => post.data.slug !== current.slug)
-      .sort((a, b) => b.date - a.date);
-
-    const sameCategory = others.filter(p => resolveCategory(p.data.category).slug === slug);
-    const rest = others.filter(p => resolveCategory(p.data.category).slug !== slug);
-    return sameCategory.concat(rest).slice(0, max);
+      .filter(post => resolveCategory(post.data.category).slug === slug)
+      .sort((a, b) => b.date - a.date)
+      .slice(0, max);
   });
 
   /* ---- transitional: de-duplicate blocks the Python pipeline also emits ----

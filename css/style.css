@@ -1311,6 +1311,21 @@ li { margin-bottom: .4rem; }
   height: auto;
   font-family: var(--font);
 }
+/* Photo figures share the container above but must not inherit the diagram
+   min-width, which would force a scrollbar on a plain image. */
+.blog-figure img {
+  display: block;
+  width: 100%;
+  min-width: 0;
+  height: auto;
+  aspect-ratio: 16 / 9;
+  object-fit: cover;
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-sm);
+  background: var(--navy-050);
+}
+.blog-figure:has(img) { overflow-x: visible; }
+
 .blog-figure figcaption {
   margin-top: .6rem;
   font-size: .85rem;
