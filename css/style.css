@@ -316,15 +316,31 @@ li { margin-bottom: .4rem; }
 .hero__inner { display: grid; gap: 26px; }
 .hero__copy { min-width: 0; }
 .hero__media { min-width: 0; }
-.hero__media img {
+
+/* Auto-advancing hero slideshow. Every slide sits in the same 4:3 frame and
+   crossfades; the frame keeps the rounded corners and shadow the single photo
+   used to have. Only .is-active is visible, and index.html ships that class on
+   the first slide, so the hero still shows a photo with JS turned off. */
+.hero__media .hero-slides {
+  position: relative;
   width: 100%;
   aspect-ratio: 4 / 3;
-  object-fit: cover;
+  overflow: hidden;
   border-radius: var(--radius-lg);
   box-shadow: 0 18px 40px rgba(3, 12, 26, .45);
   outline: 1px solid rgba(255, 255, 255, .14);
   outline-offset: -1px;
 }
+.hero__media .hero-slide {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  opacity: 0;
+  transition: opacity 800ms ease-in-out;
+}
+.hero__media .hero-slide.is-active { opacity: 1; }
 
 .hero h1 { color: var(--white); font-size: 2.05rem; }
 .hero h1 em {
@@ -444,12 +460,19 @@ li { margin-bottom: .4rem; }
   scroll-margin-top: calc(var(--header-h) + 16px);
 }
 .service-block + .service-block { margin-top: 18px; }
+/* Service blocks run the full width of the page, so a bare 16/9 ratio would
+   render the photo ~640px tall on desktop. Keep 16/9 for narrow screens and
+   cap the height so the photo stays a landscape band, like the homepage
+   service cards, instead of dominating the block. */
 .service-block__photo {
   width: calc(100% + 40px);
   max-width: none;
   margin: -22px -20px 18px;
   aspect-ratio: 16 / 9;
+  height: auto;
+  max-height: 300px;
   object-fit: cover;
+  object-position: center;
   border-radius: var(--radius-lg) var(--radius-lg) 0 0;
   background: var(--navy-050);
 }
@@ -920,7 +943,7 @@ li { margin-bottom: .4rem; }
   .quick-form .form-status,
   .quick-form .form-note { grid-column: 1 / -1; }
   .hero__inner { grid-template-columns: 1.05fr .95fr; align-items: center; gap: 44px; }
-  .service-block__photo { width: calc(100% + 56px); margin: -28px -28px 24px; }
+  .service-block__photo { width: calc(100% + 56px); margin: -28px -28px 24px; height: 300px; }
   .topbar__areas { display: block; }
   .topbar__inner { justify-content: space-between; text-align: left; }
   .footer__grid { grid-template-columns: 2fr 1fr 1fr; gap: 32px; }

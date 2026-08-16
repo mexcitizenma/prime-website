@@ -100,57 +100,52 @@ each searcher.
 
 ## Photos and image sizes
 
-Originals live in `images/stock/`, organised into per-service subfolders
-(`interior-painting/`, `cabinet-painting/`, `garage-epoxy/`, …). They are
-camera-resolution files — never link to them directly. The site serves
-web-sized copies, generated with macOS `sips`:
+Originals live in `images/stock/<service>/` at camera resolution — never link to
+them directly. The site serves resized copies from `images/stock/web/` (service
+and hero photos) and `images/gallery/` (gallery tiles), generated with `sips`:
 
-    sips -Z 1400 -s format jpeg -s formatOptions 68 \
-         "images/stock/exterior-painting/single house.jpg" \
-         --out images/stock/web/hero-house.jpg
+    # keep the whole frame (landscape sources)
+    sips -Z 1100 -s format jpeg -s formatOptions 68 "images/stock/siding/Siding.JPG" \
+         --out images/stock/web/siding-cleaning.jpg
 
-Home and services pages (`images/stock/web/`):
+    # crop a portrait source to the tile ratio (4:3 gallery, 16:9 service block)
+    sips --resampleWidth 1100 "images/stock/cabinet-painting/IMG_3463.JPG" --out /tmp/t.jpg
+    sips -c 825 1100 -s format jpeg -s formatOptions 68 /tmp/t.jpg \
+         --out images/gallery/cabinets-vanity.jpg
 
-| Web file | From | Used for |
-|---|---|---|
-| `hero-house.jpg` | exterior-painting/single house.jpg | home hero, both languages |
-| `interior-painting-painter.jpg` | interior-painting/interior home painting.jpg | Interior Painting card + block |
-| `exterior-painting.jpg` | exterior-painting/blue single house.jpg | Exterior Painting card + block |
-| `cabinet-painting.jpg` | cabinet-painting/kitchen cabine.jpg | Cabinet Painting card + block |
-| `epoxy-floors.jpg` | garage-epoxy/Garage epoxy.JPG | Garage Epoxy Floors card + block |
-| `pressure-washing.jpg` | pressure-washing/pressure washer.jpg | Pressure Washing card + block |
-| `handyman.jpg` | handyman/handyman renovation.jpg | Handyman card + block |
+Gallery tiles are 4:3 (1100×825), service-block photos 16:9 (1100×619), card
+photos 16:10. Cropping to the target ratio beats letting CSS crop a portrait
+source, which throws away half the frame.
 
-Gallery photos live in `images/gallery/` instead, named after the tile they fill:
+### Comment conventions
 
-| Gallery file | From |
-|---|---|
-| `cabinets-kitchen-white.jpg` | cabinet-painting/Kitchen before after.JPG |
+Two markers appear above `<img>` tags and they mean opposite things:
 
-The other 15 gallery tiles are still hatched "Photo coming soon" placeholders —
-drop a file in with the matching name from `images/gallery/README.txt` and it
-appears automatically, no markup change needed.
+- `<!-- REAL JOB PHOTO -->` — actual Prime Paint work. Leave it alone.
+- `<!-- STOCK PHOTO (placeholder) — replace with a real Prime Paint job photo -->`
+  — licensed stock standing in until a real photo exists.
 
-**Real job photos vs stock.** The garage epoxy shot and the kitchen before/after
-are genuine Prime Paint work and deliberately carry **no** `STOCK PHOTO` comment.
-Everything else on the home and services pages is licensed stock and is marked
-with one. Never add the placeholder comment back onto a real job photo.
+Only two stock photos are left on the site: pressure washing and handyman, on
+the home and services pages.
 
-All six service cards on the home page carry a photo, so the hatched "photo
-coming" band is unused there — it still kicks in automatically for any future
-card that has a `.card__icon` and no `.card__photo`.
+### Still missing a photo
 
-Spare, already resized: `interior-painting.jpg` (a blue-room render, dropped
-because it read as CGI beside the real photos — safe to delete).
-Spare, not yet resized: `handyman/handy man repair.jpg`, plus the ~20 new
-job photos added to the service subfolders.
+Gallery tiles awaiting a file (they show the hatched "Photo coming soon" tile
+until one appears — no markup change needed, just drop the file in):
 
-Photos whose subject sits off-centre are cropped with CSS `object-position`, set
-inline on those `<img>` tags: pressure washing `center 69%`, handyman
-`center 43%`, garage epoxy `center 70%`. The painter and gallery shots use the
-default centre crop. Adjust if a swap changes the framing.
+- `epoxy-basement.jpg`
+- `exterior-deck-stain.jpg`
+- `fence-stain.jpg`
+- `pressure-wash-driveway.jpg`
+- `siding-clean-before-after.jpg`
+- `tv-mount.jpg`
 
-Keep any replacement photo under ~250 KB and around 1100–1400px on its long edge.
+On the services page, **Fence Painting** is the only block still text-only —
+there is no fence photo in `images/stock/`.
+
+`images/stock/crew-team/` and `images/stock/general/` hold the crew and personal
+photos; only the crew exterior shot is in use (hero slideshow). See the notes at
+the end of this file.
 
 ## Footer copyright year
 

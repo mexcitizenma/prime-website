@@ -241,6 +241,58 @@
     }
   }
 
+  /* ---------------------------------------------- hero photo slideshow -- */
+  /* Crossfades the real job photos stacked inside .hero-slides on the home
+     page. The fade itself is CSS; this only moves the .is-active class. Stays
+     put entirely when the visitor asks for reduced motion, and stops ticking
+     while the tab is in the background. */
+  function initHeroSlideshow() {
+    var frame = document.querySelector('[data-hero-slides]');
+    if (!frame) return;
+
+    var slides = frame.querySelectorAll('.hero-slide');
+    if (slides.length < 2) return;
+
+    var DELAY = 4500;
+    var reduce = window.matchMedia ? window.matchMedia('(prefers-reduced-motion: reduce)') : null;
+    var index = 0;
+    var timer = null;
+
+    function advance() {
+      slides[index].classList.remove('is-active');
+      index = (index + 1) % slides.length;
+      slides[index].classList.add('is-active');
+    }
+
+    function start() {
+      if (timer !== null || document.hidden) return;
+      if (reduce && reduce.matches) return;
+      timer = window.setInterval(advance, DELAY);
+    }
+
+    function stop() {
+      if (timer === null) return;
+      window.clearInterval(timer);
+      timer = null;
+    }
+
+    // No work at all in a background tab; the loop resumes where it left off.
+    document.addEventListener('visibilitychange', function () {
+      if (document.hidden) stop();
+      else start();
+    });
+
+    // Honour the setting being flipped after the page has already loaded.
+    if (reduce && reduce.addEventListener) {
+      reduce.addEventListener('change', function () {
+        if (reduce.matches) stop();
+        else start();
+      });
+    }
+
+    start();
+  }
+
   /* ------------------------------------------------- reveal on scroll -- */
   function initReveal() {
     var items = document.querySelectorAll('.reveal');
@@ -270,6 +322,7 @@
     initGalleryFilter();
     initEstimateForms();
     initServicePreselect();
+    initHeroSlideshow();
     initReveal();
   }
 
