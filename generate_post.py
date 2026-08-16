@@ -128,6 +128,71 @@ def parse_json_response(raw):
     return json.loads(clean)
 
 
+JSON_FIELDS = ["title", "seo_title", "summary", "keywords", "social_hook", "detail"]
+
+_ESCAPES = {'"': '"', "\\": "\\", "/": "/", "b": "\b",
+            "f": "\f", "n": "\n", "r": "\r", "t": "\t"}
+
+
+def _decode_loose(s):
+    """Decode a JSON string body that may mix correct escapes with raw
+    characters, so it can be re-encoded properly."""
+    out, i = [], 0
+    while i < len(s):
+        c = s[i]
+        if c == "\\" and i + 1 < len(s):
+            nxt = s[i + 1]
+            if nxt in _ESCAPES:
+                out.append(_ESCAPES[nxt]); i += 2; continue
+            if nxt == "u" and i + 6 <= len(s):
+                try:
+                    out.append(chr(int(s[i + 2:i + 6], 16))); i += 6; continue
+                except ValueError:
+                    pass
+        out.append(c); i += 1
+    return "".join(out)
+
+
+def repair_json(raw):
+    """Rebuild the object field by field when the model leaves a quote or a
+    newline unescaped inside a value.
+
+    A generic JSON repair is guesswork, but this response has a fixed, flat
+    schema of known string fields — so each value can be delimited by where the
+    NEXT field's key begins rather than by quote-matching, and re-encoded with
+    json.dumps. Handles the common failure (an unescaped `"` from an HTML
+    attribute) and raw newlines in the same pass.
+    """
+    text = raw.strip()
+    if text.startswith("```"):
+        text = re.sub(r"^```[a-zA-Z]*\s*", "", text)
+        text = re.sub(r"```\s*$", "", text).strip()
+
+    starts = []
+    for field in JSON_FIELDS:
+        m = re.search(r'"%s"\s*:\s*"' % re.escape(field), text)
+        if m:
+            starts.append((m.end(), field, m.start()))
+    if not starts:
+        return None
+    starts.sort()
+
+    data = {}
+    for idx, (value_start, field, _) in enumerate(starts):
+        if idx + 1 < len(starts):
+            boundary = starts[idx + 1][2]          # where the next key begins
+        else:
+            boundary = text.rfind("}")
+            if boundary == -1:
+                boundary = len(text)
+        chunk = text[value_start:boundary]
+        cut = chunk.rfind('"')                     # the value's real closing quote
+        if cut == -1:
+            continue
+        data[field] = _decode_loose(chunk[:cut])
+    return data or None
+
+
 def dump_raw(raw, slug, lang, attempt):
     """Write the unparsed response to disk. Guessing at a JSON failure from a
     400-char excerpt wastes a run; the whole thing costs nothing to keep."""
@@ -156,7 +221,10 @@ def describe_json_error(raw, err):
 
 def build_prompt(title, lang, category, correction=None):
     lang_label = "English" if lang == "en" else "Spanish (neutral Latin American)"
-    sources = "\n".join(f"  - {u}" for u in bp.ALLOWED_SOURCES)
+    sources = "\n".join(
+        f"  [[SOURCE:{key}]] — {entry[1 + bp.li(lang)]}"
+        for key, entry in bp.SOURCE_LINKS.items()
+    )
     faq_head = "Preguntas Frecuentes" if lang == "es" else "Frequently Asked Questions"
     team = "nuestro equipo" if lang == "es" else "our team"
 
@@ -199,17 +267,19 @@ REQUIRED FAQ SECTION (second to last thing in the article)
   <h3>The question?</h3><p>A direct 2-4 sentence answer.</p>
 - Answer the question in the first sentence. No lists inside FAQ answers.
 
-EXTERNAL LINKS — REQUIRED, AND STRICT
-- You MUST cite at least 1 and at most 2 sources, and ONLY from this list:
+CITATIONS — REQUIRED, AND WRITTEN AS MARKERS
+- You MUST cite 1 or 2 sources, using ONLY these markers:
 {sources}
-- Use the URL exactly as written above. Do NOT add a path, query or fragment —
-  a deeper URL you infer will 404, and the build will strip the link.
-  Correct:   <a href="https://www.epa.gov/">the EPA</a>
-  Rejected:  <a href="https://www.epa.gov/lead/rrp-rule">the EPA RRP rule</a>
-- Put each citation inside a sentence where it supports a factual claim
-  (a regulation, a health guideline, a material spec). Do not add a link list.
-- Never link to another painting company, contractor, or home-services business.
-- A draft with zero links from this list is rejected and regenerated.
+- Write the marker inline, exactly as shown, where the source supports a factual
+  claim (a regulation, a health guideline, a material spec). The build replaces
+  it with the correct link and link text, e.g.
+  Correct:   "For homes built before 1978, [[SOURCE:epa]] sets the rules for
+             disturbing lead paint."
+  Rejected:  any <a> tag, any http:// or https:// URL, any domain name
+- NEVER write a URL, a domain, or an <a> tag yourself. You do not know the
+  correct paths, and a link you invent will be stripped from the article.
+- Never cite another painting company, contractor, or home-services business.
+- A draft with no marker from this list is rejected and regenerated.
 
 PLACEHOLDERS — insert these two markers, exactly as written, once each
 - {bp.MARKER_SERVICE} — put this inside a sentence where it is natural to point the
@@ -227,16 +297,22 @@ VOICE RULES — these are absolute
 - Never write the company name anywhere in the body.
 - Use "{team}" at most once in the whole article.
 
-Return ONLY valid JSON (no markdown fences, no commentary). Every double quote
-and newline inside a string value must be escaped, and the HTML in "detail" must
-be a single line with no raw line breaks:
+JSON OUTPUT RULES — the response is parsed by machine, so these are absolute
+- Return ONLY the JSON object: no markdown fences, no commentary before or after.
+- "detail" must contain NO double-quote characters at all. The allowed tags carry
+  no attributes, so you never need one: write <h2>, <h3>, <p>, <ul>, <ol>, <li>.
+  Never write class=, style=, href=, or any other attribute.
+- Put the whole article on one line. No raw line breaks inside any string value.
+- If you must use a quotation mark in prose, use a single quote (').
+
+Return ONLY valid JSON:
 {{
   "title": "{title}",
   "seo_title": "{bp.SEO_TITLE_MIN}-{bp.SEO_TITLE_MAX} character SEO title",
   "summary": "150-200 character meta description",
   "keywords": "exactly 5 comma-separated keywords, 100 characters total at most",
   "social_hook": "Engaging 1-2 sentence social media caption",
-  "detail": "<full HTML article — <h2>, <h3>, <p>, <ul>, <ol>, <a> tags only>"
+  "detail": "<full HTML article — <h2>, <h3>, <p>, <ul>, <ol>, <li> only, no attributes>"
 }}"""
 
 
@@ -257,23 +333,30 @@ def generate_article(title, lang, category, inline_image=None, max_attempts=3,
         try:
             data = parse_json_response(raw)
         except json.JSONDecodeError as e:
-            path = dump_raw(raw, slug, lang, attempt)
-            print(f"  JSON parse error ({lang}): {describe_json_error(raw, e)}")
-            print(f"  Full response saved to {path}")
-            if stop_reason == "max_tokens":
-                # The ceiling cut the JSON off. Asking for valid JSON won't help;
-                # asking for less text will.
-                correction = (
-                    f"your previous response was cut off at the {MAX_TOKENS}-token "
-                    "limit before the JSON closed. Write a SHORTER article — stay at "
-                    "the low end of the word range — and keep every field compact"
-                )
+            repaired = repair_json(raw)
+            if repaired and repaired.get("detail"):
+                print(f"  JSON was malformed ({describe_json_error(raw, e)}) — "
+                      f"repaired {len(repaired)} fields and continuing.")
+                data = repaired
             else:
-                correction = (
-                    "your response was not valid JSON. Escape every double quote and "
-                    "newline inside string values, and return nothing but the JSON object"
-                )
-            continue
+                path = dump_raw(raw, slug, lang, attempt)
+                print(f"  JSON parse error ({lang}): {describe_json_error(raw, e)}")
+                print(f"  Full response saved to {path}")
+                if stop_reason == "max_tokens":
+                    # The ceiling cut the JSON off. Asking for valid JSON won't
+                    # help; asking for less text will.
+                    correction = (
+                        f"your previous response was cut off at the {MAX_TOKENS}-token "
+                        "limit before the JSON closed. Write a SHORTER article — stay "
+                        "at the low end of the word range — and keep every field compact"
+                    )
+                else:
+                    correction = (
+                        "your response was not valid JSON. Do not put any double-quote "
+                        "character inside the article HTML — the allowed tags take no "
+                        "attributes — and return nothing but the JSON object"
+                    )
+                continue
 
         processed = bp.build_body(
             data.get("detail", ""), category, lang,

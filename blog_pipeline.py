@@ -192,6 +192,28 @@ PHOTO_ALT_INLINE = {
     ),
 }
 
+# Citation markers. The model writes [[SOURCE:epa]] and never a URL or an <a>
+# tag -- same rule as the service link and the CTA. Besides guaranteeing the URL
+# is whitelisted, this keeps double quotes out of the JSON string the model
+# returns: an href attribute inside `detail` breaks the response every time.
+SOURCE_LINKS = {
+    "epa": ("https://www.epa.gov/", "the EPA", "la EPA"),
+    "cdc": ("https://www.cdc.gov/", "the CDC", "los CDC"),
+    "umass": ("https://ag.umass.edu/", "UMass Extension", "UMass Extension"),
+    "sherwin-williams": ("https://www.sherwin-williams.com/",
+                         "Sherwin-Williams", "Sherwin-Williams"),
+    "benjamin-moore": ("https://www.benjaminmoore.com/",
+                       "Benjamin Moore", "Benjamin Moore"),
+    "nahb": ("https://www.nahb.org/",
+             "the National Association of Home Builders",
+             "la Asociación Nacional de Constructores de Viviendas"),
+    "energy": ("https://www.energy.gov/",
+               "the U.S. Department of Energy",
+               "el Departamento de Energía de EE. UU."),
+}
+
+SOURCE_MARKER_RE = re.compile(r"\[\[SOURCE:([a-z-]+)\]\]", re.I)
+
 MARKER_SERVICE = "[[SERVICE_LINK]]"
 MARKER_CTA = "[[CTA]]"
 
@@ -239,6 +261,32 @@ def neutralize_template_syntax(html_body):
 
 # ------------------------------------------------------- 2. external links ---
 
+def expand_source_markers(html_body, lang, already_kept=0):
+    """Turn [[SOURCE:key]] into a real anchor. Unknown keys are dropped rather
+    than guessed at, and the cap is enforced here too.
+
+    Runs AFTER sanitize_external_links so the anchors created here are never
+    fed back through the sanitizer, which would unwrap them once the budget was
+    already spent."""
+    kept, unknown = [], []
+    budget = MAX_EXTERNAL_LINKS - already_kept
+
+    def repl(match):
+        key = match.group(1).lower()
+        entry = SOURCE_LINKS.get(key)
+        if not entry:
+            unknown.append(key)
+            return ""
+        if len(kept) >= budget:
+            return entry[1 + li(lang)]  # over the cap: keep the words, drop the link
+        url = entry[0]
+        kept.append(url)
+        return (f'<a href="{url}" target="_blank" rel="noopener nofollow">'
+                f"{entry[1 + li(lang)]}</a>")
+
+    return SOURCE_MARKER_RE.sub(repl, html_body), kept, unknown
+
+
 def _host_allowed(url):
     m = re.match(r"https?://([^/?#]+)", url, re.I)
     if not m:
@@ -247,19 +295,20 @@ def _host_allowed(url):
     return any(host == h or host.endswith("." + h) for h in ALLOWED_HOSTS)
 
 
-def sanitize_external_links(html_body):
+def sanitize_external_links(html_body, already_kept=0):
     """Unwrap every external <a> that is not on the whitelist, force the rest to
     the domain root, and keep at most MAX_EXTERNAL_LINKS. Link text is always
     preserved as plain prose, so removing a link never loses a sentence."""
     kept = []
     removed = []
+    budget = MAX_EXTERNAL_LINKS - already_kept
 
     def repl(match):
         href = htmllib.unescape(match.group(1)).strip()
         inner = match.group(2)
         if not re.match(r"https?://", href, re.I):
             return match.group(0)  # internal / mailto / sms / tel — leave alone
-        if not _host_allowed(href) or len(kept) >= MAX_EXTERNAL_LINKS:
+        if not _host_allowed(href) or len(kept) >= budget:
             removed.append(href)
             return inner
         root = _domain_root(href)
@@ -269,8 +318,8 @@ def sanitize_external_links(html_body):
             f'rel="noopener nofollow">{inner}</a>'
         )
 
-    out = re.sub(r'<a\b[^>]*?href="([^"]*)"[^>]*>(.*?)</a>', repl, html_body,
-                 flags=re.I | re.S)
+    out = re.sub(r'''<a\b[^>]*?href=["']([^"']*)["'][^>]*>(.*?)</a>''', repl,
+                 html_body, flags=re.I | re.S)
     return out, kept, removed
 
 
@@ -671,7 +720,12 @@ def trim_seo_title(candidate, fallback):
 def build_body(raw_html, category, lang, inline_image=None, inline_alt=None):
     """The full deterministic pass: model prose in, publishable body out."""
     body = neutralize_template_syntax(raw_html.strip())
+    # Sanitize first: any <a> the model wrote by hand goes through the whitelist.
+    # Expansion comes second so its anchors are never re-sanitized.
     body, kept, removed = sanitize_external_links(body)
+    body, sourced, unknown_sources = expand_source_markers(
+        body, lang, already_kept=len(kept))
+    kept = kept + sourced
     body, service_marked = inject_service_link(body, category, lang)
     body, photo_placed = inject_inline_photo(
         body, inline_image, inline_alt, faq_start=find_faq_start(body))
@@ -682,6 +736,7 @@ def build_body(raw_html, category, lang, inline_image=None, inline_alt=None):
         "faq": faq,
         "external_kept": kept,
         "external_removed": removed,
+        "unknown_sources": unknown_sources,
         "service_marker_used": service_marked,
         "cta_marker_used": cta_marked,
         "inline_photo_placed": photo_placed,
