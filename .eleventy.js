@@ -22,6 +22,12 @@ module.exports = function (eleventyConfig) {
   eleventyConfig.addPassthroughCopy("js");
   eleventyConfig.addPassthroughCopy("images");
 
+  /* Spanish blog URLs are rewritten into _site/es/blog/ by _redirects, and
+     Cloudflare Pages looks for the nearest 404.html by walking up from the
+     *rewritten* path. Without a copy in here, a missing /es/blog/... URL
+     walks past _site/ and lands on the English /404.html. */
+  eleventyConfig.addPassthroughCopy({ "es/404.html": "es/404.html" });
+
   /* Only `type: post` files are articles. Category pages and the blog index
      live in the same folders and must stay out of the listings. */
   const posts = (api, glob) =>
