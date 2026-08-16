@@ -1,0 +1,25 @@
+{
+  "name": "prime-website",
+  "version": "1.0.0",
+  "description": "Static, mobile-first site in English and Spanish. No build step, no frameworks, no dependencies. Open `index.html` in a browser, or deploy the folder to Netlify (the contact forms need Netlify to receive submissions — see below).",
+  "main": "index.js",
+  "scripts": {
+  "build": "eleventy",
+  "serve": "eleventy --serve"
+},
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/mexcitizenma/prime-website.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/mexcitizenma/prime-website/issues"
+  },
+  "homepage": "https://github.com/mexcitizenma/prime-website#readme",
+  "devDependencies": {
+    "@11ty/eleventy": "^3.1.6"
+  }
+}
