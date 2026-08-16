@@ -2,3 +2,4 @@ __*.html
 node_modules/
 _site/
 __pycache__/
+_debug/

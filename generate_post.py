@@ -24,6 +24,10 @@ TOPICS_FILE = "topics.json"
 EN_DIR = bp.EN_DIR
 ES_DIR = bp.ES_DIR
 MODEL = "claude-sonnet-4-6"
+# A 1200-word article plus metadata runs well under this; the old 8000
+# left little headroom. Staying at/below ~16k keeps non-streaming
+# requests clear of SDK/HTTP timeouts.
+MAX_TOKENS = 16000
 
 
 def load_topics():
@@ -67,6 +71,8 @@ def pick_topic(topics):
 
 
 def call_claude(prompt, retries=3):
+    """Returns (text, stop_reason) so the caller can tell a truncated response
+    apart from a malformed one. A None text means every attempt failed."""
     delays = [30, 60, 120]
     for attempt in range(retries):
         if attempt > 0:
@@ -82,16 +88,36 @@ def call_claude(prompt, retries=3):
                 },
                 json={
                     "model": MODEL,
-                    "max_tokens": 8000,
+                    "max_tokens": MAX_TOKENS,
                     "messages": [{"role": "user", "content": prompt}],
                 },
                 timeout=240,
             )
             resp.raise_for_status()
-            return resp.json()["content"][0]["text"]
+            payload = resp.json()
+
+            stop_reason = payload.get("stop_reason")
+            usage = payload.get("usage", {})
+            blocks = [b for b in payload.get("content", []) if b.get("type") == "text"]
+            text = blocks[0]["text"] if blocks else ""
+
+            print(f"  API: stop_reason={stop_reason} "
+                  f"output_tokens={usage.get('output_tokens')} "
+                  f"chars={len(text)}")
+            if stop_reason == "max_tokens":
+                print(f"  The response hit the {MAX_TOKENS}-token ceiling and was cut off.")
+            elif stop_reason == "refusal":
+                print("  The model declined this prompt.")
+            if not text:
+                print(f"  No text block in the response (stop_reason={stop_reason}).")
+                continue
+            return text, stop_reason
         except Exception as e:
             print(f"Attempt {attempt+1} failed: {e}")
-    return None
+    return None, None
+
+
+DEBUG_DIR = Path("_debug")
 
 
 def parse_json_response(raw):
@@ -100,6 +126,30 @@ def parse_json_response(raw):
         clean = re.sub(r"^```[a-zA-Z]*\s*", "", clean)
         clean = re.sub(r"```\s*$", "", clean).strip()
     return json.loads(clean)
+
+
+def dump_raw(raw, slug, lang, attempt):
+    """Write the unparsed response to disk. Guessing at a JSON failure from a
+    400-char excerpt wastes a run; the whole thing costs nothing to keep."""
+    DEBUG_DIR.mkdir(exist_ok=True)
+    path = DEBUG_DIR / f"{slug}-{lang}-attempt{attempt}.txt"
+    path.write_text(raw, encoding="utf-8")
+    return path
+
+
+def describe_json_error(raw, err):
+    """Say whether the JSON was cut short or simply malformed, and point at the
+    field it died in — a truncated response and a bad escape need different fixes."""
+    pos = getattr(err, "pos", None)
+    detail = f"{err.msg} at char {pos}" if pos is not None else str(err)
+    if pos is None:
+        return detail
+    field = None
+    for m in re.finditer(r'"(\w+)"\s*:', raw[:pos]):
+        field = m.group(1)
+    where = f" (inside the \"{field}\" field)" if field else ""
+    tail = " — response ends here, so it was cut off" if pos >= len(raw) - 2 else ""
+    return f"{detail}{where}{tail}; {len(raw)} chars received"
 
 
 # ------------------------------------------------------------------ prompt ---
@@ -133,9 +183,13 @@ LENGTH AND STRUCTURE
 - Mention Western MA cities and New England seasons/climate naturally where they
   genuinely add information. Do not force them into every paragraph.
 
-SEO TITLE
+SEO TITLE AND METADATA
 - Also return "seo_title": a {bp.SEO_TITLE_MIN}-{bp.SEO_TITLE_MAX} character title
   with the primary keyword in the first few words. Count the characters.
+- Keep the metadata fields tight — they are not where the value is. "keywords" is
+  exactly 5 comma-separated phrases and no more than 100 characters in total;
+  "summary" is 150-200 characters; "social_hook" is one or two sentences. Put your
+  effort into "detail".
 - Write naturally. Do not repeat the primary keyword more than 2-3 times in the
   whole article — no keyword stuffing.
 
@@ -173,12 +227,14 @@ VOICE RULES — these are absolute
 - Never write the company name anywhere in the body.
 - Use "{team}" at most once in the whole article.
 
-Return ONLY valid JSON (no markdown fences, no commentary):
+Return ONLY valid JSON (no markdown fences, no commentary). Every double quote
+and newline inside a string value must be escaped, and the HTML in "detail" must
+be a single line with no raw line breaks:
 {{
   "title": "{title}",
   "seo_title": "{bp.SEO_TITLE_MIN}-{bp.SEO_TITLE_MAX} character SEO title",
   "summary": "150-200 character meta description",
-  "keywords": "kw1, kw2, kw3, kw4, kw5",
+  "keywords": "exactly 5 comma-separated keywords, 100 characters total at most",
   "social_hook": "Engaging 1-2 sentence social media caption",
   "detail": "<full HTML article — <h2>, <h3>, <p>, <ul>, <ol>, <a> tags only>"
 }}"""
@@ -186,20 +242,37 @@ Return ONLY valid JSON (no markdown fences, no commentary):
 
 # ---------------------------------------------------------------- generate ---
 
-def generate_article(title, lang, category, inline_image=None, max_attempts=2):
-    """Draft, run the deterministic pass, and retry once on a hard failure."""
+def generate_article(title, lang, category, inline_image=None, max_attempts=3,
+                     slug="post"):
+    """Draft, run the deterministic pass, and retry on a hard failure.
+
+    A truncated response and a malformed one look identical to json.loads but
+    need different corrections, so they are diagnosed separately here."""
     correction = None
     last = None
     for attempt in range(1, max_attempts + 1):
-        raw = call_claude(build_prompt(title, lang, category, correction))
+        raw, stop_reason = call_claude(build_prompt(title, lang, category, correction))
         if not raw:
             return None
         try:
             data = parse_json_response(raw)
         except json.JSONDecodeError as e:
-            print(f"  JSON parse error ({lang}): {e}")
-            print(f"  {raw[:400]}")
-            correction = "your response was not valid JSON"
+            path = dump_raw(raw, slug, lang, attempt)
+            print(f"  JSON parse error ({lang}): {describe_json_error(raw, e)}")
+            print(f"  Full response saved to {path}")
+            if stop_reason == "max_tokens":
+                # The ceiling cut the JSON off. Asking for valid JSON won't help;
+                # asking for less text will.
+                correction = (
+                    f"your previous response was cut off at the {MAX_TOKENS}-token "
+                    "limit before the JSON closed. Write a SHORTER article — stay at "
+                    "the low end of the word range — and keep every field compact"
+                )
+            else:
+                correction = (
+                    "your response was not valid JSON. Escape every double quote and "
+                    "newline inside string values, and return nothing but the JSON object"
+                )
             continue
 
         processed = bp.build_body(
@@ -229,7 +302,8 @@ def build_and_write(topic, slug, lang, category, date_str, image, inline_image,
     title = topic["en"] if lang == "en" else topic["es"]
     print(f"Generating {lang.upper()} post...")
 
-    result = generate_article(title, lang, category, inline_image=inline_image)
+    result = generate_article(title, lang, category,
+                              inline_image=inline_image, slug=slug)
     if not result:
         print(f"  Giving up on the {lang.upper()} post.")
         return published
