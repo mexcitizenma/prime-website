@@ -1,0 +1,45 @@
+name: Generate Blog Post
+
+on:
+  schedule:
+    - cron: '0 13 * * 1-5'  # Mon-Fri 9 AM EDT
+  workflow_dispatch:            # Manuel tetikleme
+
+jobs:
+  generate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install Python deps
+        run: pip install requests
+
+      - name: Install Node deps
+        run: npm ci
+
+      - name: Generate blog post
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.PRIME_WEBSITE_BLOG }}
+        run: python generate_post.py
+
+      - name: Build with Eleventy
+        run: npm run build
+
+      - name: Commit and push
+        run: |
+          git config user.name "Prime Blog Bot"
+          git config user.email "bot@primeprowork.com"
+          git add blog-src/en/ blog-src/es/ _site/
+          git diff --staged --quiet || git commit -m "Auto: add blog post $(date +'%Y-%m-%d')"
+          git push
