@@ -63,15 +63,14 @@ defaults built into `js/main.js`.
 2. **Quick estimate form** — `quick-estimate`, card style on the alt background
 3. Services grid (photo cards)
 4. **Why Homeowners Choose Prime Paint & Home Services** — six value tiles
-5. "A small local company…" — the original four why-cards
-6. How it works (four steps)
-7. Service area (navy band with town chips)
-8. FAQ
-9. **Towns We Serve in Western Massachusetts** — explicit town list for local SEO
-10. Closing CTA band
+5. How it works (four steps)
+6. Service area (navy band with town chips)
+7. FAQ
+8. **Towns We Serve in Western Massachusetts** — explicit town list for local SEO
+9. Closing CTA band
 
-Sections 4/5 and 7/9 cover overlapping ground — see the note at the end of this
-file if you want them merged.
+Sections 6 and 8 both cover the service area — see the note at the end of this
+file.
 
 ## Language switching
 
@@ -110,18 +109,31 @@ never link to these directly). The site serves web-sized copies from
 
 | Web file | From | Used for |
 |---|---|---|
-| `hero-house.jpg` | blue single house.jpg | home hero, both languages |
+| `hero-house.jpg` | single house.jpg | home hero, both languages |
+| `interior-painting.jpg` | Interior home paint.jpg | Interior Painting card + block |
 | `exterior-painting.jpg` | blue single house.jpg | Exterior Painting card + block |
 | `cabinet-painting.jpg` | kitchen cabine.jpg | Cabinet Painting card + block |
+| `epoxy-floors.jpg` | Garage epoxy.JPG | Garage Epoxy Floors card + block |
 | `pressure-washing.jpg` | pressure washer.jpg | Pressure Washing card + block |
 | `handyman.jpg` | handyman renovation.jpg | Handyman card + block |
 
-`handy man repair.jpg` is not used anywhere yet — it is a window-caulking shot
-that would suit the Interior Painting card if you want that slot filled.
+All six service cards on the home page now carry a photo, so the hatched
+"photo coming" band is currently unused — it still kicks in automatically for
+any future card that has a `.card__icon` and no `.card__photo`.
 
-The two portrait photos are cropped by CSS `object-position` (set inline on those
-`<img>` tags) so the subject stays in frame — pressure washing at `center 69%`,
-handyman at `center 43%`. Adjust those percentages if a swap changes the framing.
+Prepared but not in use:
+
+- `interior-painting-painter.jpg` (from `interior home painting.jpg`) — a painter
+  holding a roller and paint can, cropped at the neck. Swap it onto the Interior
+  Painting card by changing one `src` if you prefer it to the room shot.
+- `Kitchen before after.JPG` — a genuine before/after cabinet transformation.
+  Not resized or placed anywhere yet; it is the strongest gallery candidate you
+  have and would fit `images/gallery/cabinets-kitchen-white.jpg`.
+- `handy man repair.jpg` — window-caulking shot, still spare.
+
+Photos whose subject sits off-centre are cropped with CSS `object-position`, set
+inline on those `<img>` tags: pressure washing `center 69%`, handyman
+`center 43%`, garage epoxy `center 70%`. Adjust if a swap changes the framing.
 
 Keep any replacement photo under ~250 KB and around 1100–1400px on its long edge.
 
@@ -161,17 +173,18 @@ number and service area, and keep the name/phone identical everywhere.
 
 ## Known overlaps worth a decision
 
-The home page now says some things more than once. Everything below is
-deliberate (each block was requested), but if you want it tightened:
+- **Service area appears twice** on the home page: the navy band mid-page and the
+  explicit town list above the footer. Both list the same seven towns. Keeping
+  both is normal for local SEO, but the navy band could become a one-line
+  mention instead.
+- The hero badge row (Free estimates / Locally owned / Fast response / Clean,
+  tidy work) still echoes four of the six "Why Homeowners Choose…" tiles. That
+  repetition is mild and fairly standard — the badges are a glance, the tiles the
+  explanation.
 
-- **Trust points appear three times**: the hero badge row (Free estimates /
-  Locally owned / Fast response / Clean, tidy work), the six "Why Homeowners
-  Choose…" tiles, and the four "A small local company…" cards. Merging the last
-  two into one six-tile section would remove the repetition without losing any
-  claim.
-- **Service area appears twice**: the navy band mid-page and the explicit town
-  list above the footer. Both list the same seven towns. Keeping both is normal
-  for local SEO, but the navy band could become a one-line mention instead.
-- **"Fully Insured"** is now published on the home page in both languages.
-  Make sure the policy is actually active before this goes live — it is the one
-  claim on the site that a customer could hold you to.
+## Claims on the site
+
+Nothing claims years in business, and **no insurance claim appears anywhere** —
+"Fully Insured" was removed at the owner's instruction because the business does
+not currently carry a policy. If that changes, add it back as a seventh value
+tile on the home page, in both languages.
