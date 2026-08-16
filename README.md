@@ -62,12 +62,53 @@ each searcher.
 1. **Mailing address / ZIP.** Structured data uses Westfield, MA 01085 with
    approximate coordinates. Update to the real address, or remove the `address`
    and `geo` blocks if you would rather not publish one.
-2. **Photos.** The gallery shows neutral "Photo coming soon" / "Foto próximamente"
-   tiles until photos land in `images/gallery/` — filenames are listed in that
-   folder. Also add `images/prime-paint-og.jpg` (1200×630) for Facebook link
-   previews; the structured data already points at it.
+2. **Photos.** Two kinds of placeholder are on the site right now:
+   - **Stock photos** on the home and services pages (hero, four service cards,
+     four service blocks). These are licensed-look placeholders, not Prime Paint
+     jobs — every one is marked with an `STOCK PHOTO (placeholder)` HTML comment
+     right above the `<img>`. Replace them with real job photos as they come in.
+   - **Gallery tiles**, which show a neutral "Photo coming soon" /
+     "Foto próximamente" hatch until files land in `images/gallery/` — filenames
+     are listed in that folder.
+
+   Also add `images/prime-paint-og.jpg` (1200×630) for Facebook link previews;
+   the structured data already points at it.
 3. **Social proof.** No reviews or testimonials are included, and nothing claims
    years in business. Add real reviews once you have them.
+
+## Photos and image sizes
+
+Originals live in `images/stock/` untouched (27 MB of camera-resolution files —
+never link to these directly). The site serves web-sized copies from
+`images/stock/web/`, generated with macOS `sips`:
+
+    sips -Z 1400 -s format jpeg -s formatOptions 68 "images/stock/single house.jpg" \
+         --out images/stock/web/hero-house.jpg
+
+| Web file | From | Used for |
+|---|---|---|
+| `hero-house.jpg` | single house.jpg | home hero, both languages |
+| `exterior-painting.jpg` | blue single house.jpg | Exterior Painting card + block |
+| `cabinet-painting.jpg` | kitchen cabine.jpg | Cabinet Painting card + block |
+| `pressure-washing.jpg` | pressure washer.jpg | Pressure Washing card + block |
+| `handyman.jpg` | handyman renovation.jpg | Handyman card + block |
+
+`handy man repair.jpg` is not used anywhere yet — it is a window-caulking shot
+that would suit the Interior Painting card if you want that slot filled.
+
+The two portrait photos are cropped by CSS `object-position` (set inline on those
+`<img>` tags) so the subject stays in frame — pressure washing at `center 69%`,
+handyman at `center 43%`. Adjust those percentages if a swap changes the framing.
+
+Keep any replacement photo under ~250 KB and around 1100–1400px on its long edge.
+
+## Footer copyright year
+
+The footer year is hardcoded to **2025** on all eight pages. `js/main.js` still
+contains an `initYear()` helper that rewrites any element carrying a `data-year`
+attribute to the current year — no element uses it now, so it does nothing. If
+you ever want the year to update itself again, put the attribute back:
+`<span data-year>2025</span>`.
 
 ## Business hours
 

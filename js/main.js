@@ -95,23 +95,30 @@
     });
   }
 
-  /* --------------------------------------------------- contact form ---- */
-  /* Submits to Netlify Forms in the background so the visitor stays on the
-     page and gets an inline thank-you. Without JS the form still posts
-     normally and Netlify handles it. Wording comes from data-msg-*
-     attributes so the Spanish page can override it without new code. */
-  function initContactForm() {
-    var form = document.getElementById('quote-form');
-    if (!form) return;
+  /* ------------------------------------------------- estimate forms ---- */
+  /* Handles every Netlify form on the page (contact page + the quick form on
+     the home page). Each form submits in the background and swaps itself for
+     the thank-you panel named in its data-thanks attribute. Wording comes from
+     data-msg-* attributes so the Spanish pages override it without new code. */
+  function initEstimateForms() {
+    var forms = document.querySelectorAll('form[data-netlify]');
 
-    var status = document.querySelector('.form-status');
-    var thanks = document.getElementById('form-thanks');
+    for (var i = 0; i < forms.length; i++) {
+      wireForm(forms[i]);
+    }
+  }
+
+  function wireForm(form) {
+    var status = form.querySelector('.form-status');
+    var thanksId = form.getAttribute('data-thanks');
+    var thanks = thanksId ? document.getElementById(thanksId) : null;
 
     function msg(key, fallback) {
       return form.getAttribute('data-msg-' + key) || fallback;
     }
 
     function setError(field, message) {
+      if (!field) return;
       var wrap = field.closest('.field');
       if (!wrap) return;
       var slot = wrap.querySelector('.error');
@@ -141,25 +148,35 @@
       setError(phone, '');
       setError(email, '');
 
-      if (!name.value.trim()) {
+      if (name && !name.value.trim()) {
         setError(name, msg('name', 'Please enter your name.'));
         ok = false;
       }
 
-      var hasPhone = digits(phone.value).length >= 10;
-      var hasEmail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.value.trim());
-      if (!hasPhone && !hasEmail) {
-        setError(phone, msg('contact', 'Add a phone number or an email so we can reply.'));
+      var hasPhone = phone ? digits(phone.value).length >= 10 : false;
+      var hasEmail = email ? /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.value.trim()) : false;
+
+      if (phone && email) {
+        // either one is enough to reach the customer back
+        if (!hasPhone && !hasEmail) {
+          setError(phone, msg('contact', 'Add a phone number or an email so we can reply.'));
+          ok = false;
+        } else {
+          if (phone.value.trim() && !hasPhone) {
+            setError(phone, msg('phone', 'Please enter a 10-digit phone number.'));
+            ok = false;
+          }
+          if (email.value.trim() && !hasEmail) {
+            setError(email, msg('email', 'Please check the email address.'));
+            ok = false;
+          }
+        }
+      } else if (phone && !hasPhone) {
+        setError(phone, msg('phone', 'Please enter a 10-digit phone number.'));
         ok = false;
-      } else {
-        if (phone.value.trim() && !hasPhone) {
-          setError(phone, msg('phone', 'Please enter a 10-digit phone number.'));
-          ok = false;
-        }
-        if (email.value.trim() && !hasEmail) {
-          setError(email, msg('email', 'Please check the email address.'));
-          ok = false;
-        }
+      } else if (email && !hasEmail) {
+        setError(email, msg('email', 'Please check the email address.'));
+        ok = false;
       }
 
       if (!ok) {
@@ -223,7 +240,7 @@
     initYear();
     initGalleryFallback();
     initGalleryFilter();
-    initContactForm();
+    initEstimateForms();
     initReveal();
   }
 
