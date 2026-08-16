@@ -1,0 +1,37 @@
+{#- Footer + the legal strip that closes every blog page.
+    Expects: es (bool), base ("/" or "/es/").
+    The disclaimer and the copyright line are the only text down here that
+    names anything; the brand is stated once, in the copyright. -#}
+<footer class="site-footer">
+  <div class="wrap">
+    <div class="footer__grid">
+      <div class="footer__brand">
+        <h4>Prime Paint &amp; Home Services</h4>
+        <p>{{ "Pintura y servicios para el hogar en Westfield, Agawam, Springfield y todo el oeste de Massachusetts. Estimados gratis, trabajo limpio y precios honestos." if es else "Painting and home services for homeowners across Westfield, Agawam, Springfield and Western Massachusetts. Free estimates, clean work, honest pricing." }}</p>
+      </div>
+      <div>
+        <h4>{{ "Páginas" if es else "Pages" }}</h4>
+        <ul>
+          <li><a href="{{ base }}">{{ "Inicio" if es else "Home" }}</a></li>
+          <li><a href="{{ base }}services.html">{{ "Servicios" if es else "Services" }}</a></li>
+          <li><a href="{{ base }}gallery.html">{{ "Galería" if es else "Gallery" }}</a></li>
+          <li><a href="{{ base }}blog/">Blog</a></li>
+          <li><a href="{{ base }}contact.html">{{ "Contacto" if es else "Contact" }}</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4>{{ "Contacto" if es else "Contact" }}</h4>
+        <ul>
+          <li><a href="sms:+14134860396">413-486-0396</a></li>
+          <li><a href="mailto:prosnipercr7@gmail.com">prosnipercr7@gmail.com</a></li>
+          <li><a href="https://www.facebook.com/PrimePaintHome" target="_blank" rel="noopener">Facebook</a></li>
+          <li><a href="https://m.me/PrimePaintHome" target="_blank" rel="noopener">Messenger</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer__bottom">
+      <p class="footer__disclaimer">{{ "Los artículos del blog son información general para casas del oeste de Massachusetts. Cada casa es distinta: confirme permisos, códigos locales e instrucciones del fabricante antes de empezar cualquier trabajo. Los precios mencionados son rangos aproximados, no un estimado." if es else "Blog articles are general information for Western Massachusetts homes. Every house is different — confirm permits, local code and manufacturer instructions before starting any work. Any prices mentioned are ballpark ranges, not a quote." }}</p>
+      <p>&copy; 2025 Prime Paint &amp; Home Services. {{ "Sirviendo el oeste de Massachusetts." if es else "Serving Western Massachusetts." }}</p>
+    </div>
+  </div>
+</footer>

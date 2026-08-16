@@ -23,7 +23,8 @@ jobs:
           python-version: '3.11'
 
       - name: Install Python deps
-        run: pip install requests
+        # Pillow resizes the hero photo on Linux; sips is macOS-only.
+        run: pip install requests Pillow
 
       - name: Install Node deps
         run: npm ci
@@ -40,6 +41,7 @@ jobs:
         run: |
           git config user.name "Prime Blog Bot"
           git config user.email "bot@primeprowork.com"
-          git add blog-src/en/ blog-src/es/ _site/
+          # _site is gitignored and Netlify rebuilds it, so it is not committed.
+          git add blog-src/en/ blog-src/es/ published.json images/stock/web/
           git diff --staged --quiet || git commit -m "Auto: add blog post $(date +'%Y-%m-%d')"
           git push

@@ -1,0 +1,129 @@
+{#- ---------------------------------------------------------------------
+    Reusable blog building blocks, as macros so every caller has to pass the
+    language explicitly instead of relying on whatever happens to be in scope.
+
+    Import with:  {% import "blog-parts.njk" as parts %}
+--------------------------------------------------------------------- -#}
+
+{#- Category permalink. EN and ES use different URL words on purpose; both
+    are declared as hreflang alternates on the category pages. -#}
+{% macro catUrl(slug, es) %}{{ "/es/blog/categoria/" if es else "/blog/category/" }}{{ slug }}/{% endmacro %}
+
+{#- A post's own thumbnail, falling back to its category photo so a card grid
+    never renders a hole. -#}
+{% macro postImage(post, es) %}{% if post.data.image %}/{{ post.data.image }}{% else %}/{{ (post.data.category | category(post.data.lang)).image }}{% endif %}{% endmacro %}
+
+
+{#- ---- Sidebar: every category that has posts, with its post count -------- #}
+{% macro categoryAside(cats, es, current) %}
+<aside class="blog-aside" aria-labelledby="blog-topics">
+  <div class="blog-aside__card">
+    <h2 class="blog-aside__title" id="blog-topics">{{ "Temas del blog" if es else "Browse topics" }}</h2>
+    <ul class="blog-aside__list">
+      {%- for cat in cats %}
+      <li>
+        <a href="{{ catUrl(cat.slug, es) | trim }}"{% if cat.slug == current %} class="is-active" aria-current="page"{% endif %}>
+          <span class="blog-aside__label">{{ cat.label }}</span>
+          <span class="blog-aside__count">{{ cat.count }}</span>
+        </a>
+      </li>
+      {%- endfor %}
+    </ul>
+    <a class="blog-aside__all" href="{{ "/es/blog/" if es else "/blog/" }}">{{ "Ver todos los artículos" if es else "See all articles" }} &rarr;</a>
+  </div>
+
+  <div class="blog-aside__card blog-aside__card--cta">
+    <h2 class="blog-aside__title">{{ "¿Tiene un proyecto en mente?" if es else "Have a project in mind?" }}</h2>
+    <p>{{ "Estimados gratis en todo el oeste de Massachusetts." if es else "Free estimates across Western Massachusetts." }}</p>
+    <a class="btn btn--gold" href="{{ "/es/contact.html" if es else "/contact.html" }}#estimate-form">{{ "Pedir Estimado" if es else "Get an Estimate" }}</a>
+  </div>
+</aside>
+{% endmacro %}
+
+
+{#- ---- Horizontal category chips, for the blog index and category pages --- #}
+{% macro categoryChips(cats, es, current) %}
+<nav class="chip-nav-wrap" aria-label="{{ "Categorías del blog" if es else "Blog categories" }}">
+  <ul class="chip-nav">
+    <li><a href="{{ "/es/blog/" if es else "/blog/" }}"{% if not current %} class="is-active" aria-current="page"{% endif %}>{{ "Todos" if es else "All" }}</a></li>
+    {%- for cat in cats %}
+    <li><a href="{{ catUrl(cat.slug, es) | trim }}"{% if cat.slug == current %} class="is-active" aria-current="page"{% endif %}>{{ cat.label }} <span class="chip-nav__count">{{ cat.count }}</span></a></li>
+    {%- endfor %}
+  </ul>
+</nav>
+{% endmacro %}
+
+
+{#- ---- Post card: thumbnail, category tag, title, one-line description ---
+     Used by the blog index, the category pages and "They Also Read", so a post
+     looks the same everywhere it is linked. -#}
+{% macro postCard(post, es) %}
+{%- set cat = post.data.category | category(post.data.lang) -%}
+<a class="post-card" href="{{ post.url }}">
+  <img class="post-card__photo" src="{{ postImage(post, es) | trim }}" alt="" width="400" height="250" loading="lazy" decoding="async">
+  <div class="post-card__body">
+    <span class="post-card__tag">{{ cat.label }}</span>
+    <h3 class="post-card__title">{{ post.data.title }}</h3>
+    <p class="post-card__excerpt">{{ post.data.summary | truncate(110) }}</p>
+    <span class="post-card__more">{{ "Leer más" if es else "Read more" }} &rarr;</span>
+  </div>
+</a>
+{% endmacro %}
+
+
+{#- ---- A grid of post cards ---------------------------------------------- #}
+{% macro postGrid(posts, es) %}
+<div class="post-grid">
+  {%- for post in posts %}{{ postCard(post, es) }}{%- endfor %}
+</div>
+{% endmacro %}
+
+
+{#- ---- "They Also Read": related posts, same card, tighter grid ---------- #}
+{% macro alsoRead(posts, es) %}
+{% if posts and posts.length %}
+<section class="also-read" aria-labelledby="also-read-title">
+  <h2 class="also-read__title" id="also-read-title">{{ "También leyeron" if es else "They Also Read" }}</h2>
+  <div class="post-grid post-grid--compact">
+    {%- for post in posts %}{{ postCard(post, es) }}{%- endfor %}
+  </div>
+</section>
+{% endif %}
+{% endmacro %}
+
+
+{#- ---- Mid-article CTA. The end-of-post CTA lives in post.njk. ----------- #}
+{% macro ctaInline(es) %}
+<aside class="blog-cta-inline">
+  <p>{{ "¿Prefiere que lo haga alguien con experiencia? Le damos un estimado gratis, sin compromiso." if es else "Rather hand this one to a crew that does it every day? Free estimate, no pressure." }}</p>
+  <div class="btn-row">
+    <a class="btn btn--gold" href="{{ "/es/contact.html" if es else "/contact.html" }}#estimate-form">{{ "Solicite un Estimado Gratis" if es else "Get a Free Estimate" }}</a>
+    <a class="btn btn--outline" href="sms:+14134860396">{{ "Texto al 413-486-0396" if es else "Text 413-486-0396" }}</a>
+  </div>
+</aside>
+{% endmacro %}
+
+
+{#- ---- Category cards, for the bottom of the blog index ------------------ #}
+{% macro categoryCards(cats, es) %}
+<section class="section section--alt" aria-labelledby="topics-title">
+  <div class="wrap">
+    <div class="section-head">
+      <p class="eyebrow">{{ "Categorías" if es else "Categories" }}</p>
+      <h2 id="topics-title">{{ "Explore por tema" if es else "Browse by topic" }}</h2>
+    </div>
+    <div class="cat-grid">
+      {%- for cat in cats %}
+      <a class="cat-card" href="{{ catUrl(cat.slug, es) | trim }}">
+        <img class="cat-card__photo" src="/{{ cat.image }}" alt="" width="320" height="200" loading="lazy" decoding="async">
+        <div class="cat-card__body">
+          <h3 class="cat-card__title">{{ cat.label }}</h3>
+          <p class="cat-card__blurb">{{ cat.blurb }}</p>
+          <span class="cat-card__count">{{ cat.count }} {{ ("artículos" if cat.count != 1 else "artículo") if es else ("articles" if cat.count != 1 else "article") }}</span>
+        </div>
+      </a>
+      {%- endfor %}
+    </div>
+  </div>
+</section>
+{% endmacro %}

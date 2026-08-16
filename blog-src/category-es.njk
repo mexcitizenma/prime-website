@@ -1,0 +1,115 @@
+---
+pagination:
+  data: categoryPages.es
+  size: 1
+  alias: cat
+permalink: "es/blog/categoria/{{ cat.slug }}/index.html"
+eleventyExcludeFromCollections: true
+---
+{#- Spanish twin of category-en.njk. The URL word differs ("categoria" vs
+    "category") on purpose; both sides declare each other as hreflang
+    alternates, and only when the other language actually has posts. -#}
+{% import "blog-parts.njk" as parts %}
+{%- set es = true -%}
+{%- set base = "/es/" -%}
+{%- set lang = "es" -%}
+{%- set en_url = "/blog/category/" + cat.slug + "/" -%}
+{%- set es_url = "/es/blog/categoria/" + cat.slug + "/" -%}
+{%- set cats = collections.blog_es | usedCategories("es") -%}
+{%- set posts = collections.blog_es | inCategory(cat.slug) | reverse -%}
+{%- set metaDesc = cat.blurb + " Guías y consejos para propietarios en el oeste de Massachusetts." -%}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>{{ cat.label }} | Blog de Prime Paint &amp; Home Services</title>
+<meta name="description" content="{{ metaDesc }}">
+<meta name="robots" content="index, follow">
+<meta name="theme-color" content="#0f2547">
+<link rel="canonical" href="https://primeprowork.com{{ es_url }}">
+{% if cat.has_en %}<link rel="alternate" hreflang="en" href="https://primeprowork.com{{ en_url }}">{% endif %}
+<link rel="alternate" hreflang="es" href="https://primeprowork.com{{ es_url }}">
+<link rel="alternate" hreflang="x-default" href="https://primeprowork.com{{ en_url if cat.has_en else es_url }}">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Prime Paint &amp; Home Services">
+<meta property="og:locale" content="es_US">
+<meta property="og:title" content="{{ cat.label }} | Blog de Prime Paint &amp; Home Services">
+<meta property="og:description" content="{{ metaDesc }}">
+<meta property="og:url" content="https://primeprowork.com{{ es_url }}">
+<meta property="og:image" content="https://primeprowork.com/{{ cat.image }}">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="stylesheet" href="/css/style.css">
+<link rel="icon" href="/images/favicon.svg">
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "CollectionPage",
+  "name": {{ cat.label | dump | safe }},
+  "description": {{ metaDesc | dump | safe }},
+  "inLanguage": "es",
+  "url": "https://primeprowork.com{{ es_url }}",
+  "hasPart": [
+    {%- for post in posts %}
+    { "@type": "Article", "headline": {{ post.data.title | dump | safe }}, "url": "https://primeprowork.com{{ post.url }}" }{% if not loop.last %},{% endif %}
+    {%- endfor %}
+  ]
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    { "@type": "ListItem", "position": 1, "name": "Inicio", "item": "https://primeprowork.com/es/" },
+    { "@type": "ListItem", "position": 2, "name": "Blog", "item": "https://primeprowork.com/es/blog/" },
+    { "@type": "ListItem", "position": 3, "name": {{ cat.label | dump | safe }}, "item": "https://primeprowork.com{{ es_url }}" }
+  ]
+}
+</script>
+</head>
+<body>
+<a class="skip-link" href="#main">Ir al contenido</a>
+
+{% include "topbar.njk" %}
+{% include "site-header.njk" %}
+
+<main id="main">
+  <section class="section">
+    <div class="wrap">
+      <p class="breadcrumb">
+        <a href="/es/">Inicio</a> &rsaquo;
+        <a href="/es/blog/">Blog</a> &rsaquo;
+        <span>{{ cat.label }}</span>
+      </p>
+
+      <div class="section-head">
+        <p class="eyebrow">Categoría</p>
+        <h1>{{ cat.label }}</h1>
+        <p class="lead">{{ cat.blurb }}</p>
+        <p class="cat-head__count">{{ posts.length }} {{ "artículo" if posts.length == 1 else "artículos" }}</p>
+      </div>
+
+      {{ parts.categoryChips(cats, es, cat.slug) }}
+      {{ parts.postGrid(posts, es) }}
+
+      <section class="blog-post__cta cta-band">
+        <h2>¿Listo para su estimado gratis?</h2>
+        <p>Cuéntenos sobre su proyecto y le damos una respuesta clara sobre precio y fechas.</p>
+        <div class="btn-row">
+          <a class="btn btn--navy" href="/es/contact.html#estimate-form">Solicite un Estimado Gratis</a>
+          <a class="btn btn--navy" href="sms:+14134860396">Envíe un texto al 413-486-0396</a>
+        </div>
+      </section>
+
+      <p class="blog-post__back"><a href="/es/blog/">&larr; Volver al blog</a></p>
+    </div>
+  </section>
+</main>
+
+{% include "site-footer.njk" %}
+{% include "call-bar.njk" %}
+
+<script src="/js/main.js" defer></script>
+</body>
+</html>

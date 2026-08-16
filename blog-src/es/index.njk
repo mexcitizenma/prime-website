@@ -4,115 +4,61 @@ permalink: es/blog/index.html
 title: Blog
 summary: Guías de mantenimiento del hogar, consejos de pintura y recomendaciones para propietarios en el oeste de Massachusetts.
 ---
+{% import "blog-parts.njk" as parts %}
+{%- set es = true -%}
+{%- set base = "/es/" -%}
+{%- set en_url = "/blog/" -%}
+{%- set es_url = "/es/blog/" -%}
+{%- set feed = collections.blog_es | reverse -%}
+{%- set cats = collections.blog_es | usedCategories("es") -%}
 <!DOCTYPE html>
 <html lang="es">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Blog | Prime Paint & Home Services</title>
-<meta name="description" content="Guías de mantenimiento del hogar, consejos de pintura y recomendaciones para propietarios en el oeste de Massachusetts.">
+<title>Blog | Prime Paint &amp; Home Services</title>
+<meta name="description" content="{{ summary }}">
+<meta name="robots" content="index, follow">
+<meta name="theme-color" content="#0f2547">
 <link rel="canonical" href="https://primeprowork.com/es/blog/">
 <link rel="alternate" hreflang="en" href="https://primeprowork.com/blog/">
 <link rel="alternate" hreflang="es" href="https://primeprowork.com/es/blog/">
+<link rel="alternate" hreflang="x-default" href="https://primeprowork.com/blog/">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Prime Paint &amp; Home Services">
+<meta property="og:locale" content="es_US">
+<meta property="og:title" content="Blog | Prime Paint &amp; Home Services">
+<meta property="og:description" content="{{ summary }}">
+<meta property="og:url" content="https://primeprowork.com/es/blog/">
 <link rel="stylesheet" href="/css/style.css">
 <link rel="icon" href="/images/favicon.svg">
 </head>
 <body>
-<div class="topbar">
-  <div class="wrap topbar__inner">
-    <span class="topbar__areas">Sirviendo Westfield, Agawam, Springfield y el oeste de MA</span>
-    <span>Estimados gratis — <a href="sms:+14134860396">413-486-0396</a></span>
-  </div>
-</div>
-<header class="site-header">
-  <div class="wrap">
-    <div class="site-header__inner">
-      <a class="brand" href="/es/">
-        <span class="brand__mark" aria-hidden="true">PP</span>
-        <span>
-          <span class="brand__name">Prime Paint</span>
-          <span class="brand__tag">& Home Services</span>
-        </span>
-      </a>
-      <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="site-nav">
-        <span class="nav-toggle__bars" aria-hidden="true"><span></span></span>
-        Menú
-      </button>
-    </div>
-    <nav class="site-nav" id="site-nav" aria-label="Principal">
-      <ul>
-        <li><a href="/es/">Inicio</a></li>
-        <li><a href="/es/services.html">Servicios</a></li>
-        <li><a href="/es/gallery.html">Galería</a></li>
-        <li><a href="/es/blog/" aria-current="page">Blog</a></li>
-        <li><a href="/es/contact.html">Contacto</a></li>
-        <li class="lang-switch">
-          <a href="/blog/" lang="en" hreflang="en">EN</a>
-          <span aria-hidden="true">|</span>
-          <a class="is-active" href="/es/blog/" lang="es" hreflang="es">ES</a>
-        </li>
-        <li><a class="btn btn--gold" href="sms:+14134860396">Llamar 413-486-0396</a></li>
-      </ul>
-    </nav>
-  </div>
-</header>
+<a class="skip-link" href="#main">Ir al contenido</a>
+
+{% include "topbar.njk" %}
+{% include "site-header.njk" %}
+
 <main id="main">
   <section class="section">
     <div class="wrap">
       <div class="section-head">
-        <p class="eyebrow">Consejos y guías</p>
+        <p class="eyebrow">Consejos y Guías</p>
         <h1>Blog</h1>
-        <p class="lead">Guías de mantenimiento estacional, consejos de pintura y recomendaciones para propietarios en el oeste de Massachusetts.</p>
+        <p class="lead">Guías de mantenimiento por temporada, consejos de pintura y recomendaciones para propietarios en el oeste de Massachusetts.</p>
       </div>
-      <div class="grid grid--3">
-        {%- for post in collections.blog_es | reverse -%}
-        <a class="card card--link" href="/{{ post.data.permalink }}">
-          {% if post.data.image %}
-          <img class="card__photo" src="/{{ post.data.image }}" alt="{{ post.data.title }}" width="800" height="500" loading="lazy" decoding="async">
-          {% endif %}
-          <h2>{{ post.data.title }}</h2>
-          <p>{{ post.data.summary }}</p>
-          <span class="card__more">Leer más →</span>
-        </a>
-        {%- endfor -%}
-      </div>
+
+      {{ parts.categoryChips(cats, es, null) }}
+      {{ parts.postGrid(feed, es) }}
     </div>
   </section>
+
+  {{ parts.categoryCards(cats, es) }}
 </main>
-<footer class="site-footer">
-  <div class="wrap">
-    <div class="footer__grid">
-      <div class="footer__brand">
-        <h4>Prime Paint & Home Services</h4>
-        <p>Servicios de pintura y del hogar para propietarios en el oeste de Massachusetts.</p>
-      </div>
-      <div>
-        <h4>Páginas</h4>
-        <ul>
-          <li><a href="/es/">Inicio</a></li>
-          <li><a href="/es/services.html">Servicios</a></li>
-          <li><a href="/es/gallery.html">Galería</a></li>
-          <li><a href="/es/blog/">Blog</a></li>
-          <li><a href="/es/contact.html">Contacto</a></li>
-        </ul>
-      </div>
-      <div>
-        <h4>Contacto</h4>
-        <ul>
-          <li><a href="sms:+14134860396">413-486-0396</a></li>
-          <li><a href="https://www.facebook.com/PrimePaintHome" target="_blank" rel="noopener">Facebook</a></li>
-        </ul>
-      </div>
-    </div>
-    <div class="footer__bottom">
-      <p>&copy; 2025 Prime Paint & Home Services. Sirviendo el oeste de Massachusetts.</p>
-    </div>
-  </div>
-</footer>
-<div class="call-bar">
-  <a class="btn btn--gold" href="sms:+14134860396">Llamar</a>
-  <a class="btn btn--navy" href="https://m.me/PrimePaintHome" target="_blank" rel="noopener">Mensaje</a>
-</div>
+
+{% include "site-footer.njk" %}
+{% include "call-bar.njk" %}
+
 <script src="/js/main.js" defer></script>
 </body>
 </html>

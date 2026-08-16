@@ -1,0 +1,114 @@
+---
+pagination:
+  data: categoryPages.en
+  size: 1
+  alias: cat
+permalink: "blog/category/{{ cat.slug }}/index.html"
+eleventyExcludeFromCollections: true
+---
+{#- One listing page per category that actually has English posts. Which
+    categories those are is decided by _data/categoryPages.js, so an empty
+    category never gets a page and the sidebar never links to a dead end. -#}
+{% import "blog-parts.njk" as parts %}
+{%- set es = false -%}
+{%- set base = "/" -%}
+{%- set lang = "en" -%}
+{%- set en_url = "/blog/category/" + cat.slug + "/" -%}
+{%- set es_url = "/es/blog/categoria/" + cat.slug + "/" -%}
+{%- set cats = collections.blog_en | usedCategories("en") -%}
+{%- set posts = collections.blog_en | inCategory(cat.slug) | reverse -%}
+{%- set metaDesc = cat.blurb + " Guides and tips for Western Massachusetts homeowners." -%}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>{{ cat.label }} | Prime Paint &amp; Home Services Blog</title>
+<meta name="description" content="{{ metaDesc }}">
+<meta name="robots" content="index, follow">
+<meta name="theme-color" content="#0f2547">
+<link rel="canonical" href="https://primeprowork.com{{ en_url }}">
+<link rel="alternate" hreflang="en" href="https://primeprowork.com{{ en_url }}">
+{% if cat.has_es %}<link rel="alternate" hreflang="es" href="https://primeprowork.com{{ es_url }}">{% endif %}
+<link rel="alternate" hreflang="x-default" href="https://primeprowork.com{{ en_url }}">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Prime Paint &amp; Home Services">
+<meta property="og:title" content="{{ cat.label }} | Prime Paint &amp; Home Services Blog">
+<meta property="og:description" content="{{ metaDesc }}">
+<meta property="og:url" content="https://primeprowork.com{{ en_url }}">
+<meta property="og:image" content="https://primeprowork.com/{{ cat.image }}">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="stylesheet" href="/css/style.css">
+<link rel="icon" href="/images/favicon.svg">
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "CollectionPage",
+  "name": {{ cat.label | dump | safe }},
+  "description": {{ metaDesc | dump | safe }},
+  "inLanguage": "en",
+  "url": "https://primeprowork.com{{ en_url }}",
+  "hasPart": [
+    {%- for post in posts %}
+    { "@type": "Article", "headline": {{ post.data.title | dump | safe }}, "url": "https://primeprowork.com{{ post.url }}" }{% if not loop.last %},{% endif %}
+    {%- endfor %}
+  ]
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    { "@type": "ListItem", "position": 1, "name": "Home", "item": "https://primeprowork.com/" },
+    { "@type": "ListItem", "position": 2, "name": "Blog", "item": "https://primeprowork.com/blog/" },
+    { "@type": "ListItem", "position": 3, "name": {{ cat.label | dump | safe }}, "item": "https://primeprowork.com{{ en_url }}" }
+  ]
+}
+</script>
+</head>
+<body>
+<a class="skip-link" href="#main">Skip to content</a>
+
+{% include "topbar.njk" %}
+{% include "site-header.njk" %}
+
+<main id="main">
+  <section class="section">
+    <div class="wrap">
+      <p class="breadcrumb">
+        <a href="/">Home</a> &rsaquo;
+        <a href="/blog/">Blog</a> &rsaquo;
+        <span>{{ cat.label }}</span>
+      </p>
+
+      <div class="section-head">
+        <p class="eyebrow">Category</p>
+        <h1>{{ cat.label }}</h1>
+        <p class="lead">{{ cat.blurb }}</p>
+        <p class="cat-head__count">{{ posts.length }} {{ "article" if posts.length == 1 else "articles" }}</p>
+      </div>
+
+      {{ parts.categoryChips(cats, es, cat.slug) }}
+      {{ parts.postGrid(posts, es) }}
+
+      <section class="blog-post__cta cta-band">
+        <h2>Ready for a free estimate?</h2>
+        <p>Tell us about your project and we will get you a straight answer on price and timing.</p>
+        <div class="btn-row">
+          <a class="btn btn--navy" href="/contact.html#estimate-form">Get a Free Estimate</a>
+          <a class="btn btn--navy" href="sms:+14134860396">Text 413-486-0396</a>
+        </div>
+      </section>
+
+      <p class="blog-post__back"><a href="/blog/">&larr; Back to the blog</a></p>
+    </div>
+  </section>
+</main>
+
+{% include "site-footer.njk" %}
+{% include "call-bar.njk" %}
+
+<script src="/js/main.js" defer></script>
+</body>
+</html>

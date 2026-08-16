@@ -1,0 +1,88 @@
+{#- ---------------------------------------------------------------------
+    Inline SVG diagrams for blog posts.
+
+    Two shapes, both drawn entirely from data — the model that writes an
+    article supplies short labels only and never any markup:
+
+      comparison()  a two-column table, for "X vs Y" posts
+      steps()       a numbered vertical flow, for "how to" / checklist posts
+
+    Both scale with the column (width:100% + viewBox), use the site's navy /
+    gold tokens, and carry a title + desc for screen readers.
+
+    `uid` must be unique per page — it namespaces the clip path so two
+    diagrams in one article cannot collide.
+
+    Import with:  {% import "diagrams.njk" as fig %}
+--------------------------------------------------------------------- -#}
+
+{% macro comparison(data, uid, es) %}
+{%- set rows = data.rows or [] -%}
+{%- set rowH = 46 -%}
+{%- set headH = 48 -%}
+{%- set height = headH + (rows.length * rowH) -%}
+<figure class="blog-figure">
+  <svg viewBox="0 0 720 {{ height }}" width="720" height="{{ height }}" role="img"
+       aria-labelledby="t-{{ uid }} d-{{ uid }}" preserveAspectRatio="xMidYMid meet">
+    <title id="t-{{ uid }}">{{ data.title }}</title>
+    <desc id="d-{{ uid }}">{{ "Tabla comparativa" if es else "Comparison table" }}: {{ data.col_a }} {{ "frente a" if es else "versus" }} {{ data.col_b }}.</desc>
+    <clipPath id="clip-{{ uid }}"><rect x="0" y="0" width="720" height="{{ height }}" rx="12"/></clipPath>
+    <g clip-path="url(#clip-{{ uid }})">
+      <rect x="0" y="0" width="720" height="{{ height }}" fill="#ffffff"/>
+      <rect x="0" y="{{ headH }}" width="248" height="{{ height - headH }}" fill="#f4f7fb"/>
+      <rect x="0" y="0" width="720" height="{{ headH }}" fill="#0f2547"/>
+      <rect x="0" y="{{ headH - 4 }}" width="720" height="4" fill="#d4a437"/>
+
+      <text x="18" y="{{ headH / 2 + 5 }}" fill="#c3d0e2" font-size="13" font-weight="700" letter-spacing="0.06em">{{ (data.label_header or ("CRITERIO" if es else "WHAT MATTERS")) | upper }}</text>
+      <text x="264" y="{{ headH / 2 + 6 }}" fill="#ffffff" font-size="15" font-weight="700">{{ data.col_a }}</text>
+      <text x="500" y="{{ headH / 2 + 6 }}" fill="#e9b949" font-size="15" font-weight="700">{{ data.col_b }}</text>
+
+      {%- for row in rows %}
+      {%- set y = headH + (loop.index0 * rowH) %}
+      {% if not loop.first %}<line x1="0" y1="{{ y }}" x2="720" y2="{{ y }}" stroke="#dde4ee" stroke-width="1"/>{% endif %}
+      <text x="18" y="{{ y + rowH / 2 + 5 }}" fill="#0f2547" font-size="14" font-weight="700">{{ row.label }}</text>
+      <text x="264" y="{{ y + rowH / 2 + 5 }}" fill="#1c2634" font-size="14">{{ row.a }}</text>
+      <text x="500" y="{{ y + rowH / 2 + 5 }}" fill="#1c2634" font-size="14">{{ row.b }}</text>
+      {%- endfor %}
+
+      <line x1="248" y1="{{ headH }}" x2="248" y2="{{ height }}" stroke="#dde4ee" stroke-width="1"/>
+      <line x1="484" y1="{{ headH }}" x2="484" y2="{{ height }}" stroke="#dde4ee" stroke-width="1"/>
+      <rect x="0.5" y="0.5" width="719" height="{{ height - 1 }}" rx="12" fill="none" stroke="#dde4ee"/>
+    </g>
+  </svg>
+  <figcaption>{{ data.caption or data.title }}</figcaption>
+</figure>
+{% endmacro %}
+
+
+{% macro steps(data, uid, es) %}
+{%- set items = data.steps or [] -%}
+{%- set stepH = 88 -%}
+{%- set height = items.length * stepH -%}
+<figure class="blog-figure">
+  <svg viewBox="0 0 720 {{ height }}" width="720" height="{{ height }}" role="img"
+       aria-labelledby="t-{{ uid }} d-{{ uid }}" preserveAspectRatio="xMidYMid meet">
+    <title id="t-{{ uid }}">{{ data.title }}</title>
+    <desc id="d-{{ uid }}">{{ "Proceso de" if es else "A" }} {{ items.length }} {{ "pasos" if es else "step process" }}: {% for s in items %}{{ s.title }}{% if not loop.last %}, {% endif %}{% endfor %}.</desc>
+
+    {%- for step in items %}
+    {%- set y = loop.index0 * stepH %}
+    {% if not loop.last %}<line x1="34" y1="{{ y + 60 }}" x2="34" y2="{{ y + stepH + 8 }}" stroke="#dde4ee" stroke-width="2"/>{% endif %}
+    <circle cx="34" cy="{{ y + 34 }}" r="21" fill="#0f2547" stroke="#d4a437" stroke-width="2"/>
+    <text x="34" y="{{ y + 40 }}" fill="#ffffff" font-size="16" font-weight="700" text-anchor="middle">{{ loop.index }}</text>
+    <text x="76" y="{{ y + 30 }}" fill="#0f2547" font-size="16" font-weight="700">{{ step.title }}</text>
+    <text x="76" y="{{ y + 52 }}" fill="#4d5a6b" font-size="14">{{ step.text }}</text>
+    {%- endfor %}
+  </svg>
+  <figcaption>{{ data.caption or data.title }}</figcaption>
+</figure>
+{% endmacro %}
+
+
+{#- Dispatcher so an article body only has to call one thing regardless of
+    which shape the topic called for. -#}
+{% macro render(data, uid, es) %}
+{%- if data.type == "comparison" -%}{{ comparison(data, uid, es) }}
+{%- elif data.type == "steps" -%}{{ steps(data, uid, es) }}
+{%- endif -%}
+{% endmacro %}

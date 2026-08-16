@@ -1,0 +1,43 @@
+{#- Main header + nav, shared by every blog page so the shell can never drift
+    from one template to the next.
+    Expects: es (bool), base ("/" or "/es/"), en_url, es_url — the EN and ES
+    addresses of *this* page, so the language switch stays on the same content
+    instead of dumping the reader on a home page. -#}
+<header class="site-header">
+  <div class="wrap">
+    <div class="site-header__inner">
+      <a class="brand" href="{{ base }}">
+        <span class="brand__mark" aria-hidden="true">PP</span>
+        <span>
+          <span class="brand__name">Prime Paint</span>
+          <span class="brand__tag">&amp; Home Services</span>
+        </span>
+      </a>
+      <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="site-nav">
+        <span class="nav-toggle__bars" aria-hidden="true"><span></span></span>
+        {{ "Menú" if es else "Menu" }}
+      </button>
+    </div>
+    <nav class="site-nav" id="site-nav" aria-label="{{ "Principal" if es else "Main" }}">
+      <ul>
+        <li><a href="{{ base }}">{{ "Inicio" if es else "Home" }}</a></li>
+        <li><a href="{{ base }}services.html">{{ "Servicios" if es else "Services" }}</a></li>
+        <li><a href="{{ base }}gallery.html">{{ "Galería" if es else "Gallery" }}</a></li>
+        <li><a href="{{ base }}blog/" aria-current="page">Blog</a></li>
+        <li><a href="{{ base }}contact.html">{{ "Contacto" if es else "Contact" }}</a></li>
+        <li class="lang-switch">
+          {% if es %}
+            <a href="{{ en_url }}" lang="en" hreflang="en">EN</a>
+            <span aria-hidden="true">|</span>
+            <a class="is-active" href="{{ es_url }}" lang="es" hreflang="es" aria-current="true">ES</a>
+          {% else %}
+            <a class="is-active" href="{{ en_url }}" lang="en" hreflang="en" aria-current="true">EN</a>
+            <span aria-hidden="true">|</span>
+            <a href="{{ es_url }}" lang="es" hreflang="es">ES</a>
+          {% endif %}
+        </li>
+        <li><a class="btn btn--gold" href="sms:+14134860396">{{ "Envíe un texto al 413-486-0396" if es else "Text 413-486-0396" }}</a></li>
+      </ul>
+    </nav>
+  </div>
+</header>

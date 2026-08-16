@@ -1,0 +1,5 @@
+{#- Sticky mobile action bar. Expects: es (bool). -#}
+<div class="call-bar">
+  <a class="btn btn--gold" href="sms:+14134860396">{{ "Envíe un texto" if es else "Text Now" }}</a>
+  <a class="btn btn--navy" href="https://m.me/PrimePaintHome" target="_blank" rel="noopener">{{ "Mensaje" if es else "Message" }}</a>
+</div>

@@ -1,142 +1,191 @@
+{#- ---------------------------------------------------------------------
+    Blog post layout.
+
+    Same shell as the rest of the site (topbar, header, footer, call-bar,
+    /css/style.css), plus the blog furniture: a category sidebar, a mid-article
+    CTA, an SVG diagram or two, an FAQ block, a "They Also Read" row and a
+    closing CTA.
+
+    Nothing on this page is authored by the model as markup. The article body,
+    the FAQ pairs and the diagram data all arrive as front matter written by
+    generate_post.py; related posts and the category list are computed by the
+    filters in .eleventy.js.
+--------------------------------------------------------------------- -#}
+{% import "blog-parts.njk" as parts %}
+
+{%- set es = (lang == "es") -%}
+{%- set base = "/es/" if es else "/" -%}
+{%- set en_url = "/blog/" + slug + "/" -%}
+{%- set es_url = "/es/blog/" + slug + "/" -%}
+{%- set self_url = es_url if es else en_url -%}
+{%- set feed = collections.blog_es if es else collections.blog_en -%}
+{%- set cat = category | category(lang) -%}
+{%- set cats = feed | usedCategories(lang) -%}
+{%- set hero = image or cat.image -%}
+{%- set related = feed | relatedPosts({ slug: slug, category: category }, 4) -%}
+{%- set published = page.date | isoDate -%}
 <!DOCTYPE html>
 <html lang="{{ lang }}">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>{{ title }} | Prime Paint & Home Services</title>
+<title>{{ seo_title or title }} | Prime Paint &amp; Home Services</title>
 <meta name="description" content="{{ summary }}">
+{% if keywords %}<meta name="keywords" content="{{ keywords }}">{% endif %}
 <meta name="robots" content="index, follow">
 <meta name="theme-color" content="#0f2547">
-<link rel="canonical" href="https://primeprowork.com/{{ permalink }}">
-<link rel="alternate" hreflang="en" href="https://primeprowork.com/blog/{{ slug }}/">
-<link rel="alternate" hreflang="es" href="https://primeprowork.com/es/blog/{{ slug }}/">
-<link rel="alternate" hreflang="x-default" href="https://primeprowork.com/blog/{{ slug }}/">
+<link rel="canonical" href="https://primeprowork.com{{ self_url }}">
+<link rel="alternate" hreflang="en" href="https://primeprowork.com{{ en_url }}">
+<link rel="alternate" hreflang="es" href="https://primeprowork.com{{ es_url }}">
+<link rel="alternate" hreflang="x-default" href="https://primeprowork.com{{ en_url }}">
 
 <meta property="og:type" content="article">
-<meta property="og:site_name" content="Prime Paint & Home Services">
-<meta property="og:title" content="{{ title }}">
+<meta property="og:site_name" content="Prime Paint &amp; Home Services">
+<meta property="og:locale" content="{{ "es_US" if es else "en_US" }}">
+<meta property="og:title" content="{{ seo_title or title }}">
 <meta property="og:description" content="{{ summary }}">
-<meta property="og:url" content="https://primeprowork.com/{{ permalink }}">
+<meta property="og:url" content="https://primeprowork.com{{ self_url }}">
+<meta property="og:image" content="https://primeprowork.com/{{ hero }}">
+<meta name="twitter:card" content="summary_large_image">
 
 <link rel="icon" href="/images/favicon.svg">
 <link rel="stylesheet" href="/css/style.css">
+
+{#- Article schema — values escaped through `dump` so quotes in a title or
+    summary can never break the JSON. -#}
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Article",
+  "headline": {{ (seo_title or title) | dump | safe }},
+  "name": {{ title | dump | safe }},
+  "description": {{ summary | dump | safe }},
+  "inLanguage": {{ lang | dump | safe }},
+  "datePublished": {{ published | dump | safe }},
+  "dateModified": {{ (date_modified or published) | dump | safe }},
+  "articleSection": {{ cat.label | dump | safe }},
+  "image": "https://primeprowork.com/{{ hero }}",
+  "mainEntityOfPage": { "@type": "WebPage", "@id": "https://primeprowork.com{{ self_url }}" },
+  "author": { "@type": "Organization", "name": "Prime Paint & Home Services" },
+  "publisher": {
+    "@type": "Organization",
+    "name": "Prime Paint & Home Services",
+    "url": "https://primeprowork.com/",
+    "telephone": "+1-413-486-0396",
+    "areaServed": "Western Massachusetts"
+  }
+}
+</script>
+
+{#- FAQPage schema. Built from the same `faq` front matter that renders the
+    visible FAQ block below, so the markup and the structured data can never
+    disagree. -#}
+{% if faq and faq.length %}
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {%- for item in faq %}
+    {
+      "@type": "Question",
+      "name": {{ item.q | dump | safe }},
+      "acceptedAnswer": { "@type": "Answer", "text": {{ item.a | dump | safe }} }
+    }{% if not loop.last %},{% endif %}
+    {%- endfor %}
+  ]
+}
+</script>
+{% endif %}
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    { "@type": "ListItem", "position": 1, "name": {{ ("Inicio" if es else "Home") | dump | safe }}, "item": "https://primeprowork.com{{ base }}" },
+    { "@type": "ListItem", "position": 2, "name": "Blog", "item": "https://primeprowork.com{{ base }}blog/" },
+    { "@type": "ListItem", "position": 3, "name": {{ cat.label | dump | safe }}, "item": "https://primeprowork.com{{ parts.catUrl(cat.slug, es) | trim }}" },
+    { "@type": "ListItem", "position": 4, "name": {{ title | dump | safe }}, "item": "https://primeprowork.com{{ self_url }}" }
+  ]
+}
+</script>
 </head>
 <body>
+<a class="skip-link" href="#main">{{ "Ir al contenido" if es else "Skip to content" }}</a>
 
-<div class="topbar">
-  <div class="wrap topbar__inner">
-    <span class="topbar__areas">Serving Westfield, Agawam, Springfield & Western MA</span>
-    <span>Free estimates — <a href="sms:+14134860396">413-486-0396</a></span>
-  </div>
-</div>
-
-<header class="site-header">
-  <div class="wrap">
-    <div class="site-header__inner">
-      <a class="brand" href="/">
-        <span class="brand__mark" aria-hidden="true">PP</span>
-        <span>
-          <span class="brand__name">Prime Paint</span>
-          <span class="brand__tag">& Home Services</span>
-        </span>
-      </a>
-      <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="site-nav">
-        <span class="nav-toggle__bars" aria-hidden="true"><span></span></span>
-        Menu
-      </button>
-    </div>
-    <nav class="site-nav" id="site-nav" aria-label="Main">
-      <ul>
-        <li><a href="/">Home</a></li>
-        <li><a href="/services.html">Services</a></li>
-        <li><a href="/gallery.html">Gallery</a></li>
-        <li><a href="/blog/">Blog</a></li>
-        <li><a href="/contact.html">Contact</a></li>
-        <li class="lang-switch">
-          {% if lang == "en" %}
-            <a class="is-active" href="/blog/{{ slug }}/" lang="en" hreflang="en">EN</a>
-            <span aria-hidden="true">|</span>
-            <a href="/es/blog/{{ slug }}/" lang="es" hreflang="es">ES</a>
-          {% else %}
-            <a href="/blog/{{ slug }}/" lang="en" hreflang="en">EN</a>
-            <span aria-hidden="true">|</span>
-            <a class="is-active" href="/es/blog/{{ slug }}/" lang="es" hreflang="es">ES</a>
-          {% endif %}
-        </li>
-        <li><a class="btn btn--gold" href="sms:+14134860396">Text 413-486-0396</a></li>
-      </ul>
-    </nav>
-  </div>
-</header>
+{% include "topbar.njk" %}
+{% include "site-header.njk" %}
 
 <main id="main">
   <article class="blog-post">
-    <div class="wrap wrap--narrow">
+    <div class="wrap">
 
-      {% if image %}
-      <img class="blog-post__hero" src="/{{ image }}" alt="{{ title }}" width="1200" height="630" loading="eager" decoding="async">
-      {% endif %}
+      <p class="breadcrumb">
+        <a href="{{ base }}">{{ "Inicio" if es else "Home" }}</a> &rsaquo;
+        <a href="{{ base }}blog/">Blog</a> &rsaquo;
+        <a href="{{ parts.catUrl(cat.slug, es) | trim }}">{{ cat.label }}</a> &rsaquo;
+        <span>{{ title }}</span>
+      </p>
 
-      <header class="blog-post__header">
-        <p class="eyebrow">{{ category }} · {{ date }}</p>
-        <h1>{{ title }}</h1>
-        <p class="lead">{{ summary }}</p>
-      </header>
+      <div class="blog-layout">
+        <div class="blog-layout__main">
 
-      <div class="blog-post__body">
-        {{ content | safe }}
-      </div>
+          <img class="blog-post__hero" src="/{{ hero }}"
+               alt="{{ image_alt or title }}"
+               width="1100" height="619" loading="eager" decoding="async">
 
-      <div class="blog-post__cta">
-        <h2>Ready for a free estimate?</h2>
-        <p>Text or message us — we usually respond the same day.</p>
-        <div class="btn-row">
-          <a class="btn btn--gold" href="/contact.html#estimate-form">Get a Free Estimate</a>
-          <a class="btn btn--outline" href="https://m.me/PrimePaintHome" target="_blank" rel="noopener">Message on Facebook</a>
+          <header class="blog-post__header">
+            <p class="eyebrow">{{ cat.label }}</p>
+            <h1>{{ title }}</h1>
+            <p class="lead">{{ summary }}</p>
+            <p class="blog-post__meta">
+              <a class="chip" href="{{ parts.catUrl(cat.slug, es) | trim }}">{{ cat.label }}</a>
+              {% if published %}<time datetime="{{ published }}">{{ "Publicado el" if es else "Published" }} {{ page.date | displayDate(lang) }}</time>{% endif %}
+              <span>&middot; {{ content | readingTime }} {{ "min de lectura" if es else "min read" }}</span>
+            </p>
+          </header>
+
+          {#- The body carries its own mid-article CTA and diagrams, positioned
+              between sections by generate_post.py. -#}
+          <div class="blog-post__body">
+            {{ content | stripDuplicateFaq | safe }}
+          </div>
+
+          {% if faq and faq.length %}
+          <section class="blog-faq" aria-labelledby="faq-title">
+            <h2 id="faq-title">{{ "Preguntas frecuentes" if es else "Frequently Asked Questions" }}</h2>
+            {%- for item in faq %}
+            <h3>{{ item.q }}</h3>
+            <p>{{ item.a }}</p>
+            {%- endfor %}
+          </section>
+          {% endif %}
+
+          {{ parts.alsoRead(related, es) }}
+
+          {#- Closing CTA — the second of the two touchpoints on every post. -#}
+          <section class="blog-post__cta cta-band">
+            <h2>{{ "¿Listo para su estimado gratis?" if es else "Ready for a free estimate?" }}</h2>
+            <p>{{ "Cuéntenos sobre su proyecto y le damos una respuesta clara sobre precio y fechas." if es else "Tell us about your project and we will get you a straight answer on price and timing." }}</p>
+            <div class="btn-row">
+              <a class="btn btn--navy" href="{{ base }}contact.html#estimate-form">{{ "Solicite un Estimado Gratis" if es else "Get a Free Estimate" }}</a>
+              <a class="btn btn--navy" href="sms:+14134860396">{{ "Envíe un texto al 413-486-0396" if es else "Text 413-486-0396" }}</a>
+            </div>
+          </section>
+
+          <p class="blog-post__back"><a href="{{ base }}blog/">&larr; {{ "Volver al blog" if es else "Back to the blog" }}</a></p>
         </div>
+
+        {{ parts.categoryAside(cats, es, cat.slug) }}
       </div>
 
     </div>
   </article>
 </main>
 
-<footer class="site-footer">
-  <div class="wrap">
-    <div class="footer__grid">
-      <div class="footer__brand">
-        <h4>Prime Paint & Home Services</h4>
-        <p>Painting and home services for homeowners across Westfield, Agawam, Springfield and Western Massachusetts. Free estimates, clean work, honest pricing.</p>
-      </div>
-      <div>
-        <h4>Pages</h4>
-        <ul>
-          <li><a href="/">Home</a></li>
-          <li><a href="/services.html">Services</a></li>
-          <li><a href="/gallery.html">Gallery</a></li>
-          <li><a href="/blog/">Blog</a></li>
-          <li><a href="/contact.html">Contact</a></li>
-        </ul>
-      </div>
-      <div>
-        <h4>Contact</h4>
-        <ul>
-          <li><a href="sms:+14134860396">413-486-0396</a></li>
-          <li><a href="mailto:prosnipercr7@gmail.com">prosnipercr7@gmail.com</a></li>
-          <li><a href="https://www.facebook.com/PrimePaintHome" target="_blank" rel="noopener">Facebook</a></li>
-          <li><a href="https://m.me/PrimePaintHome" target="_blank" rel="noopener">Messenger</a></li>
-        </ul>
-      </div>
-    </div>
-    <div class="footer__bottom">
-      <p>&copy; 2025 Prime Paint & Home Services. Serving Western Massachusetts.</p>
-    </div>
-  </div>
-</footer>
-
-<div class="call-bar">
-  <a class="btn btn--gold" href="sms:+14134860396">Text Now</a>
-  <a class="btn btn--navy" href="https://m.me/PrimePaintHome" target="_blank" rel="noopener">Message</a>
-</div>
+{% include "site-footer.njk" %}
+{% include "call-bar.njk" %}
 
 <script src="/js/main.js" defer></script>
 </body>
