@@ -208,7 +208,7 @@
       }).catch(function () {
         if (button) button.disabled = false;
         showStatus(msg('error',
-          'Sorry — that did not go through. Please call 413-486-0396 or message us on Facebook and we will take it from there.'), 'error');
+          'Sorry — that did not go through. Please text 413-486-0396 or message us on Facebook and we will take it from there.'), 'error');
       });
     });
   }
