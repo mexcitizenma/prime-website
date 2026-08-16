@@ -29,10 +29,17 @@ Both contact pages post to **Netlify Forms**:
 
 | Page | Form name in the Netlify dashboard |
 |---|---|
+| `index.html` (quick form under the hero) | `quick-estimate` |
+| `es/index.html` (quick form under the hero) | `quick-estimate-es` |
 | `contact.html` | `estimate-request` |
 | `es/contact.html` | `estimate-request-es` |
 
-Two separate names so you can tell at a glance which language a lead came in on.
+Four separate names so you can tell at a glance which page and which language a
+lead came in on. All four use the same markup pattern and the same JS handler in
+`js/main.js` — a form is wired up automatically if it has `data-netlify`, a
+`.form-status` inside it and a `data-thanks="<id>"` pointing at its thank-you
+panel. The home-page quick form requires name + phone; the contact form accepts
+a phone **or** an email.
 
 - Netlify detects the forms at deploy time from the `data-netlify="true"` markup —
   nothing to configure, but the site **must be deployed to Netlify** for
@@ -49,6 +56,22 @@ Two separate names so you can tell at a glance which language a lead came in on.
 Spanish error and status wording lives in `data-msg-*` attributes on the Spanish
 `<form>` tag — edit the text there, no JS changes needed. English uses the
 defaults built into `js/main.js`.
+
+## Home page section order
+
+1. Hero (photo + CTAs)
+2. **Quick estimate form** — `quick-estimate`, card style on the alt background
+3. Services grid (photo cards)
+4. **Why Homeowners Choose Prime Paint & Home Services** — six value tiles
+5. "A small local company…" — the original four why-cards
+6. How it works (four steps)
+7. Service area (navy band with town chips)
+8. FAQ
+9. **Towns We Serve in Western Massachusetts** — explicit town list for local SEO
+10. Closing CTA band
+
+Sections 4/5 and 7/9 cover overlapping ground — see the note at the end of this
+file if you want them merged.
 
 ## Language switching
 
@@ -82,12 +105,12 @@ Originals live in `images/stock/` untouched (27 MB of camera-resolution files �
 never link to these directly). The site serves web-sized copies from
 `images/stock/web/`, generated with macOS `sips`:
 
-    sips -Z 1400 -s format jpeg -s formatOptions 68 "images/stock/single house.jpg" \
+    sips -Z 1400 -s format jpeg -s formatOptions 68 "images/stock/blue single house.jpg" \
          --out images/stock/web/hero-house.jpg
 
 | Web file | From | Used for |
 |---|---|---|
-| `hero-house.jpg` | single house.jpg | home hero, both languages |
+| `hero-house.jpg` | blue single house.jpg | home hero, both languages |
 | `exterior-painting.jpg` | blue single house.jpg | Exterior Painting card + block |
 | `cabinet-painting.jpg` | kitchen cabine.jpg | Cabinet Painting card + block |
 | `pressure-washing.jpg` | pressure washer.jpg | Pressure Washing card + block |
@@ -135,3 +158,20 @@ published as-is and read as local to the business address (Westfield, MA).
 
 Next step off-site: claim the Google Business Profile for the same name, phone
 number and service area, and keep the name/phone identical everywhere.
+
+## Known overlaps worth a decision
+
+The home page now says some things more than once. Everything below is
+deliberate (each block was requested), but if you want it tightened:
+
+- **Trust points appear three times**: the hero badge row (Free estimates /
+  Locally owned / Fast response / Clean, tidy work), the six "Why Homeowners
+  Choose…" tiles, and the four "A small local company…" cards. Merging the last
+  two into one six-tile section would remove the repetition without losing any
+  claim.
+- **Service area appears twice**: the navy band mid-page and the explicit town
+  list above the footer. Both list the same seven towns. Keeping both is normal
+  for local SEO, but the navy band could become a one-line mention instead.
+- **"Fully Insured"** is now published on the home page in both languages.
+  Make sure the policy is actually active before this goes live — it is the one
+  claim on the site that a customer could hold you to.

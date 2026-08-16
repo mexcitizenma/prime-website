@@ -52,6 +52,7 @@
     { "@type": "City", "name": "West Springfield", "addressRegion": "MA" },
     { "@type": "City", "name": "Southampton", "addressRegion": "MA" },
     { "@type": "City", "name": "Holyoke", "addressRegion": "MA" },
+    { "@type": "City", "name": "Chicopee", "addressRegion": "MA" },
     { "@type": "AdministrativeArea", "name": "Western Massachusetts" }
   ],
   "sameAs": ["https://www.facebook.com/PrimePaintHome"],
@@ -190,7 +191,76 @@
       <!-- STOCK PHOTO (placeholder) — swap for a real Prime Paint job photo when one is
            available; originals live in images/stock/, web-sized copies in images/stock/web/. -->
       <div class="hero__media">
-        <img src="../images/stock/web/hero-house.jpg" alt="Casa suburbana al atardecer con el exterior recién terminado y las ventanas iluminadas" width="1400" height="954" fetchpriority="high" decoding="async">
+        <img src="../images/stock/web/hero-house.jpg" alt="Casa suburbana al atardecer con el exterior recién terminado y las ventanas iluminadas" width="1400" height="933" fetchpriority="high" decoding="async">
+      </div>
+    </div>
+  </section>
+
+  <section class="section section--tight section--alt" aria-labelledby="quick-title">
+    <div class="wrap">
+      <div class="quick-card">
+        <div class="quick-card__head">
+          <p class="eyebrow">Estimado gratis</p>
+          <h2 id="quick-title">D&iacute;ganos qu&eacute; necesita y le respondemos enseguida</h2>
+          <p class="lead">Un minuto para llenarlo y recibe una respuesta clara sobre precio y fechas.</p>
+        </div>
+
+        <form class="form quick-form" id="quick-form" name="quick-estimate-es" method="POST"
+              data-netlify="true" netlify-honeypot="bot-field" data-thanks="quick-thanks" novalidate
+              data-msg-name="Por favor escriba su nombre."
+              data-msg-phone="Por favor escriba un tel&eacute;fono de 10 d&iacute;gitos."
+              data-msg-sending="Enviando su solicitud&hellip;"
+              data-msg-error="Lo sentimos, la solicitud no se pudo enviar. Llame al 413-486-0396 o escr&iacute;banos por Facebook y lo resolvemos de una vez.">
+          <input type="hidden" name="form-name" value="quick-estimate-es">
+          <input type="hidden" name="bot-field">
+
+          <div class="field">
+            <label for="q-service">Servicio que necesita</label>
+            <select id="q-service" name="service">
+              <option value="">Seleccione un servicio</option>
+              <option>Pintura interior</option>
+              <option>Pintura exterior</option>
+              <option>Pintura de gabinetes</option>
+              <option>Pintura de cercas</option>
+              <option>Pisos de epoxi para garaje</option>
+              <option>Lavado a presión</option>
+              <option>Limpieza de siding</option>
+              <option>Piso laminado</option>
+              <option>Handyman</option>
+              <option>Otro</option>
+            </select>
+          </div>
+
+          <div class="field">
+            <label for="q-name">Su nombre <span aria-hidden="true">*</span></label>
+            <input id="q-name" name="name" type="text" autocomplete="name" required>
+            <span class="error" role="alert"></span>
+          </div>
+
+          <div class="field">
+            <label for="q-phone">Tel&eacute;fono <span aria-hidden="true">*</span></label>
+            <input id="q-phone" name="phone" type="tel" inputmode="tel" autocomplete="tel" placeholder="413-555-0123" required>
+            <span class="error" role="alert"></span>
+          </div>
+
+          <div class="field field--full">
+            <label for="q-message">En breve, &iquest;qu&eacute; necesita?</label>
+            <textarea id="q-message" name="details" rows="3" placeholder="Un cuarto, la casa completa, un piso de garaje &mdash; con una oraci&oacute;n basta."></textarea>
+          </div>
+
+          <button class="btn btn--gold" type="submit">Solicite su estimado gratis</button>
+          <p class="form-status" role="status"></p>
+          <p class="form-note">&iquest;Prefiere hablarlo? Llame al <a href="tel:+14134860396">413-486-0396</a> o <a href="https://m.me/PrimePaintHome" target="_blank" rel="noopener">escr&iacute;banos por Facebook</a>.</p>
+        </form>
+
+        <div class="form-thanks" id="quick-thanks" tabindex="-1" hidden>
+          <h3>&iexcl;Gracias! Recibimos su solicitud.</h3>
+          <p>Le responderemos en breve. Si necesita una respuesta de inmediato, ll&aacute;menos o escr&iacute;banos y seguimos por ah&iacute;.</p>
+          <div class="btn-row">
+            <a class="btn btn--navy" href="tel:+14134860396">Llame al 413-486-0396</a>
+            <a class="btn btn--outline-navy" href="https://m.me/PrimePaintHome" target="_blank" rel="noopener">Escr&iacute;banos por Facebook</a>
+          </div>
+        </div>
       </div>
     </div>
   </section>
@@ -258,6 +328,48 @@
       <p style="text-align:center;margin-top:26px">
         <a class="btn btn--outline-navy" href="services.html">Ver todos los servicios</a>
       </p>
+    </div>
+  </section>
+
+  <section class="section" aria-labelledby="value-title">
+    <div class="wrap">
+      <div class="section-head section-head--center">
+        <p class="eyebrow">Por qu&eacute; elegirnos</p>
+        <h2 id="value-title">Por qu&eacute; los due&ntilde;os de casa eligen a Prime Paint &amp; Home Services</h2>
+        <p class="lead">Lo que de verdad decide si un trabajo sale bien &mdash; y la raz&oacute;n por la que los vecinos siguen pasando nuestro n&uacute;mero.</p>
+      </div>
+      <ul class="value-grid">
+        <li class="value-tile reveal">
+          <span class="value-tile__icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2a7 7 0 0 0-7 7c0 5.2 7 13 7 13s7-7.8 7-13a7 7 0 0 0-7-7zm0 9.5A2.5 2.5 0 1 1 12 6.5a2.5 2.5 0 0 1 0 5z"/></svg></span>
+          <h3>Negocio local, operado por sus due&ntilde;os</h3>
+          <p>Usted contrata a sus vecinos, no a un centro de llamadas de una franquicia.</p>
+        </li>
+        <li class="value-tile reveal">
+          <span class="value-tile__icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M14 2H7a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7l-5-5zm-3 16-3-3 1.4-1.4L11 15.2l4.6-4.6L17 12l-6 6zM13 8V3.5L17.5 8H13z"/></svg></span>
+          <h3>Estimados gratis y sin compromiso</h3>
+          <p>Un precio claro por escrito antes de empezar, y la visita no le cuesta nada.</p>
+        </li>
+        <li class="value-tile reveal">
+          <span class="value-tile__icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M13 2 4 14h6l-1 8 9-12h-6l1-8z"/></svg></span>
+          <h3>Respuesta r&aacute;pida</h3>
+          <p>Contestamos llamadas y mensajes r&aacute;pido, casi siempre el mismo d&iacute;a.</p>
+        </li>
+        <li class="value-tile reveal">
+          <span class="value-tile__icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l1.8 5.2L19 9l-5.2 1.8L12 16l-1.8-5.2L5 9l5.2-1.8L12 2zm6 12l.9 2.6L21.5 17l-2.6.9L18 20.5l-.9-2.6L14.5 17l2.6-.9L18 14z"/></svg></span>
+          <h3>&Aacute;reas de trabajo limpias</h3>
+          <p>Pisos cubiertos, herrajes guardados y todo barrido antes de irnos.</p>
+        </li>
+        <li class="value-tile reveal">
+          <span class="value-tile__icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2 4 5v6c0 5 3.4 9.4 8 11 4.6-1.6 8-6 8-11V5l-8-3zm-1 13-3-3 1.4-1.4L11 12.2l4.6-4.6L17 9l-6 6z"/></svg></span>
+          <h3>Totalmente asegurados</h3>
+          <p>Con seguro vigente para proteger su casa y a nuestro equipo.</p>
+        </li>
+        <li class="value-tile reveal">
+          <span class="value-tile__icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20zm.9 15.5v1.2h-1.7v-1.2c-1.6-.2-2.7-1.1-2.9-2.7h1.8c.1.8.8 1.3 1.9 1.3 1.1 0 1.8-.5 1.8-1.2 0-.7-.5-1-2.1-1.4-2.1-.5-3.2-1.2-3.2-2.8 0-1.4 1-2.4 2.7-2.7V6.3h1.7v1.7c1.5.3 2.5 1.2 2.6 2.7h-1.8c-.1-.7-.7-1.2-1.6-1.2-1 0-1.7.4-1.7 1.1 0 .6.5.9 2 1.3 2.2.5 3.3 1.2 3.3 2.9 0 1.5-1.1 2.5-2.8 2.7z"/></svg></span>
+          <h3>Precios claros y honestos</h3>
+          <p>El n&uacute;mero de su estimado es el n&uacute;mero que usted paga.</p>
+        </li>
+      </ul>
     </div>
   </section>
 
@@ -329,6 +441,7 @@
         <li>West Springfield</li>
         <li>Southampton</li>
         <li>Holyoke</li>
+        <li>Chicopee</li>
         <li>Pueblos cercanos del oeste de MA</li>
       </ul>
       <p>&iquest;No sabe si llegamos hasta su &aacute;rea? Llame al <a href="tel:+14134860396" style="color:var(--gold-400);font-weight:700">413-486-0396</a> y preg&uacute;ntenos &mdash; viajamos por el proyecto correcto.</p>
@@ -367,6 +480,27 @@
           <p>S&iacute;. Le atendemos en espa&ntilde;ol por tel&eacute;fono, por mensaje de texto o por Facebook Messenger.</p>
         </details>
       </div>
+    </div>
+  </section>
+
+  <section class="section section--alt" aria-labelledby="towns-title">
+    <div class="wrap">
+      <div class="section-head">
+        <p class="eyebrow">&Aacute;rea de servicio</p>
+        <h2 id="towns-title">Pueblos que servimos en el oeste de Massachusetts</h2>
+        <p class="lead">Con base en el &aacute;rea de Westfield y trabajando por todo el Pioneer Valley cada semana.</p>
+      </div>
+      <ul class="town-list">
+        <li>Westfield</li>
+        <li>Agawam</li>
+        <li>Springfield</li>
+        <li>West Springfield</li>
+        <li>Southampton</li>
+        <li>Holyoke</li>
+        <li>Chicopee</li>
+        <li>Y comunidades cercanas del oeste de Massachusetts</li>
+      </ul>
+      <p class="town-note">&iquest;No ve su pueblo en la lista? Llame al <a href="tel:+14134860396">413-486-0396</a> y preg&uacute;ntenos &mdash; viajamos con frecuencia a comunidades cercanas por el proyecto correcto.</p>
     </div>
   </section>
 

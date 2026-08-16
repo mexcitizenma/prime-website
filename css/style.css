@@ -607,6 +607,77 @@ li { margin-bottom: .4rem; }
 .filter-btn:hover { background: var(--navy-050); }
 .filter-btn.is-active { background: var(--navy-800); color: var(--white); border-color: var(--navy-800); }
 
+/* ------------------------------------------------- quick estimate card --- */
+.quick-card {
+  background: var(--white);
+  border: 1px solid var(--line);
+  border-top: 4px solid var(--gold-500);
+  border-radius: var(--radius-lg);
+  padding: 24px 20px;
+  box-shadow: var(--shadow-md);
+}
+.quick-card__head { margin-bottom: 20px; }
+.quick-card__head h2 { font-size: 1.45rem; }
+.quick-card__head p { margin-bottom: 0; }
+.quick-form .btn { margin-top: 2px; }
+.quick-form .form-note { margin-bottom: 0; }
+
+/* ------------------------------------------------------- value tiles ----- */
+.value-grid {
+  display: grid;
+  gap: 14px;
+  grid-template-columns: 1fr;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+.value-tile {
+  margin: 0;
+  padding: 20px;
+  background: var(--navy-050);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-lg);
+}
+.value-tile h3 { font-size: 1.02rem; margin-bottom: .25rem; }
+.value-tile p { margin: 0; font-size: .93rem; color: var(--ink-soft); }
+.value-tile__icon {
+  display: grid;
+  place-items: center;
+  width: 42px;
+  height: 42px;
+  margin-bottom: 12px;
+  border-radius: 50%;
+  background: var(--navy-800);
+  color: var(--gold-400);
+}
+.value-tile__icon svg { width: 21px; height: 21px; }
+
+/* --------------------------------------------------------- town list ----- */
+.town-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  list-style: none;
+  margin: 0 0 18px;
+  padding: 0;
+}
+.town-list li {
+  margin: 0;
+  padding: .55rem 1rem;
+  background: var(--white);
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  font-weight: 700;
+  font-size: .93rem;
+  color: var(--navy-800);
+  box-shadow: var(--shadow-sm);
+}
+.town-list li:last-child {
+  background: var(--gold-100);
+  border-color: #ecd9a4;
+}
+.town-note { margin: 0; font-size: .95rem; color: var(--ink-soft); }
+
 /* --------------------------------------------------------------- forms --- */
 .form { display: grid; gap: 14px; }
 .field { display: grid; gap: 6px; }
@@ -819,6 +890,7 @@ li { margin-bottom: .4rem; }
 
 /* --------------------------------------------------------- breakpoints --- */
 @media (min-width: 560px) {
+  .value-grid { grid-template-columns: 1fr 1fr; }
   .btn-row { flex-direction: row; flex-wrap: wrap; }
   .btn-row .btn { flex: 1 1 auto; }
   .gallery { grid-template-columns: repeat(3, 1fr); }
@@ -836,6 +908,14 @@ li { margin-bottom: .4rem; }
   .grid--3 { grid-template-columns: repeat(3, 1fr); }
   .grid--4 { grid-template-columns: repeat(4, 1fr); }
   .steps { grid-template-columns: 1fr 1fr; gap: 24px; }
+  .value-grid { grid-template-columns: repeat(3, 1fr); gap: 18px; }
+  .quick-card { padding: 32px; }
+  .quick-card__head h2 { font-size: 1.75rem; }
+  .quick-form { grid-template-columns: repeat(3, 1fr); align-items: start; }
+  .quick-form .field--full { grid-column: 1 / -1; }
+  .quick-form .btn { grid-column: 1 / -1; justify-self: start; min-width: 280px; }
+  .quick-form .form-status,
+  .quick-form .form-note { grid-column: 1 / -1; }
   .hero__inner { grid-template-columns: 1.05fr .95fr; align-items: center; gap: 44px; }
   .service-block__photo { width: calc(100% + 56px); margin: -28px -28px 24px; }
   .topbar__areas { display: block; }
