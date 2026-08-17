@@ -83,6 +83,9 @@ def main():
             drafts.append({
                 "slug": slug, "lang": lang, "category": category,
                 "date_str": meta.get("date", "2026-01-01"), "title": title,
+                # Carry the original publish instant through a rewrite; losing
+                # it would re-sort the blog index by filename.
+                "published_at": meta.get("published_at"),
                 "seo_title": seo_title, "summary": meta.get("summary", ""),
                 "keywords": meta.get("keywords", ""),
                 "body": processed["body"], "faq": processed["faq"],

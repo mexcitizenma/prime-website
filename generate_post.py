@@ -12,7 +12,7 @@ import json
 import os
 import re
 import time
-from datetime import datetime
+from datetime import datetime, timezone
 from pathlib import Path
 
 import requests
@@ -380,8 +380,8 @@ def generate_article(title, lang, category, inline_image=None, max_attempts=3,
     return last
 
 
-def build_and_write(topic, slug, lang, category, date_str, image, inline_image,
-                    published):
+def build_and_write(topic, slug, lang, category, date_str, published_at, image,
+                    inline_image, published):
     title = topic["en"] if lang == "en" else topic["es"]
     print(f"Generating {lang.upper()} post...")
 
@@ -416,6 +416,7 @@ def build_and_write(topic, slug, lang, category, date_str, image, inline_image,
 
     path, entry = bp.assemble_post(
         slug=slug, lang=lang, category=category, date_str=date_str,
+        published_at=published_at,
         title=title, seo_title=seo_title,
         summary=data.get("summary", "").strip(),
         keywords=data.get("keywords", "").strip(),
@@ -430,7 +431,11 @@ def build_and_write(topic, slug, lang, category, date_str, image, inline_image,
 def write_topic(topic, published, force=False, langs=("en", "es")):
     slug = slugify(topic["en"])
     category = topic.get("category", "general")
-    date_str = datetime.now().strftime("%Y-%m-%d")
+    now = datetime.now(timezone.utc)
+    date_str = now.strftime("%Y-%m-%d")
+    # Second resolution, not day: a run that publishes several posts on one day
+    # would otherwise leave the blog index unable to tell which is newest.
+    published_at = now.strftime("%Y-%m-%dT%H:%M:%SZ")
     print(f"Topic: {topic['en']}  [{category}]")
     image, inline_image = bp.prepare_photos(category, slug)
 
@@ -441,7 +446,8 @@ def write_topic(topic, published, force=False, langs=("en", "es")):
         if i:
             time.sleep(10)
         published = build_and_write(topic, slug, lang, category, date_str,
-                                    image, inline_image, published)
+                                    published_at, image, inline_image,
+                                    published)
     return published
 
 

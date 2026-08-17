@@ -33,14 +33,27 @@ module.exports = function (eleventyConfig) {
 
      Sorted newest-first here, once, so every listing that touches a collection
      — the blog index, the category pages, "They Also Read" — is in reader
-     order without each template having to remember to reverse it. Two posts
-     published on the same day fall back to input path descending, which is
-     what the templates' old `| reverse` produced. */
+     order without each template having to remember to reverse it.
+
+     Ordered on `published_at`, NOT on `date`. `date` is a calendar day, and
+     the generator can publish several posts on one day; when it does, every
+     post compares equal and the newest one lands wherever its filename falls.
+     `published_at` is the second-resolution instant generate_post.py stamps at
+     write time. Posts written before that field existed fall back to `date`,
+     and a genuine tie falls back to input path so the build stays
+     deterministic. */
+  const publishedAt = item => {
+    const stamp = new Date(item.data.published_at || 0);
+    return isNaN(stamp) || !stamp.valueOf() ? item.date : stamp;
+  };
+
   const posts = (api, glob) =>
     api
       .getFilteredByGlob(glob)
       .filter(item => item.data.type === "post")
-      .sort((a, b) => b.date - a.date || b.inputPath.localeCompare(a.inputPath));
+      .sort((a, b) =>
+        publishedAt(b) - publishedAt(a) ||
+        b.inputPath.localeCompare(a.inputPath));
 
   eleventyConfig.addCollection("blog_en", api => posts(api, "blog-src/en/*.njk"));
   eleventyConfig.addCollection("blog_es", api => posts(api, "blog-src/es/*.njk"));

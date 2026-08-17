@@ -746,9 +746,9 @@ def build_body(raw_html, category, lang, inline_image=None, inline_alt=None):
 def front_matter(fields):
     """JSON scalars are valid YAML, so json.dumps handles all the escaping."""
     order = ["layout", "lang", "title", "seo_title", "summary", "keywords",
-             "category", "category_label", "date", "date_iso", "date_display",
-             "reading_minutes", "slug", "image", "image_alt", "permalink",
-             "type", "faq", "related"]
+             "category", "category_label", "date", "published_at", "date_iso",
+             "date_display", "reading_minutes", "slug", "image", "image_alt",
+             "permalink", "type", "faq", "related"]
     lines = ["---"]
     for key in order:
         if key not in fields:
@@ -778,7 +778,8 @@ def format_date(date_str, lang):
 
 
 def assemble_post(*, slug, lang, category, date_str, title, seo_title, summary,
-                  keywords, body, faq, image, image_alt, related):
+                  keywords, body, faq, image, image_alt, related,
+                  published_at=None):
     lang_dir = ES_DIR if lang == "es" else EN_DIR
     permalink = (f"es/blog/{slug}/index.html" if lang == "es"
                  else f"blog/{slug}/index.html")
@@ -793,6 +794,11 @@ def assemble_post(*, slug, lang, category, date_str, title, seo_title, summary,
         "category_label": CATEGORY_LABELS.get(
             category, CATEGORY_LABELS["general"])[li(lang)],
         "date": date_str,
+        # `date` is the calendar day the reader sees. `published_at` is the
+        # instant the post was written, and it is what orders the listings:
+        # several posts can share a day, and without a finer signal the blog
+        # index has to fall back to filename order and buries the newest one.
+        "published_at": published_at or f"{date_str}T12:00:00Z",
         "date_iso": date_str,
         "date_display": format_date(date_str, lang),
         "reading_minutes": reading_minutes(body),
