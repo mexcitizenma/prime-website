@@ -29,9 +29,18 @@ module.exports = function (eleventyConfig) {
   eleventyConfig.addPassthroughCopy({ "es/404.html": "es/404.html" });
 
   /* Only `type: post` files are articles. Category pages and the blog index
-     live in the same folders and must stay out of the listings. */
+     live in the same folders and must stay out of the listings.
+
+     Sorted newest-first here, once, so every listing that touches a collection
+     — the blog index, the category pages, "They Also Read" — is in reader
+     order without each template having to remember to reverse it. Two posts
+     published on the same day fall back to input path descending, which is
+     what the templates' old `| reverse` produced. */
   const posts = (api, glob) =>
-    api.getFilteredByGlob(glob).filter(item => item.data.type === "post");
+    api
+      .getFilteredByGlob(glob)
+      .filter(item => item.data.type === "post")
+      .sort((a, b) => b.date - a.date || b.inputPath.localeCompare(a.inputPath));
 
   eleventyConfig.addCollection("blog_en", api => posts(api, "blog-src/en/*.njk"));
   eleventyConfig.addCollection("blog_es", api => posts(api, "blog-src/es/*.njk"));

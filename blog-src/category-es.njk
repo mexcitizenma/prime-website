@@ -16,7 +16,7 @@ eleventyExcludeFromCollections: true
 {%- set en_url = "/blog/category/" + cat.slug + "/" -%}
 {%- set es_url = "/es/blog/categoria/" + cat.slug + "/" -%}
 {%- set cats = collections.blog_es | usedCategories("es") -%}
-{%- set posts = collections.blog_es | inCategory(cat.slug) | reverse -%}
+{%- set posts = collections.blog_es | inCategory(cat.slug) -%}
 {%- set metaDesc = cat.blurb + " Guías y consejos para propietarios en el oeste de Massachusetts." -%}
 <!DOCTYPE html>
 <html lang="es">

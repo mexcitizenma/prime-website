@@ -16,7 +16,7 @@ eleventyExcludeFromCollections: true
 {%- set en_url = "/blog/category/" + cat.slug + "/" -%}
 {%- set es_url = "/es/blog/categoria/" + cat.slug + "/" -%}
 {%- set cats = collections.blog_en | usedCategories("en") -%}
-{%- set posts = collections.blog_en | inCategory(cat.slug) | reverse -%}
+{%- set posts = collections.blog_en | inCategory(cat.slug) -%}
 {%- set metaDesc = cat.blurb + " Guides and tips for Western Massachusetts homeowners." -%}
 <!DOCTYPE html>
 <html lang="en">
