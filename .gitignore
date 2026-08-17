@@ -4,3 +4,8 @@ _site/
 __pycache__/
 _debug/
 .wrangler/
+
+# macOS Finder metadata. Tracking these produced spurious diffs on every
+# folder you opened, and a dirty .DS_Store is enough to block a rebase or a
+# stash pop mid-pull.
+.DS_Store
