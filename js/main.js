@@ -193,7 +193,7 @@
 
       fetch(form.getAttribute('action') || window.location.pathname, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded', 'Accept': 'application/json' },
         body: body
       }).then(function (res) {
         if (!res.ok) throw new Error('Bad response ' + res.status);
