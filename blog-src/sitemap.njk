@@ -63,4 +63,30 @@ eleventyExcludeFromCollections: true
     <priority>0.5</priority>
   </url>
 {%- endfor %}
+{%- for cat in categoryPages.en %}
+  <url>
+    <loc>https://primeprowork.com/blog/category/{{ cat.slug }}/</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://primeprowork.com/blog/category/{{ cat.slug }}/"/>
+{%- if cat.has_es %}
+    <xhtml:link rel="alternate" hreflang="es" href="https://primeprowork.com/es/blog/categoria/{{ cat.slug }}/"/>
+{%- endif %}
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://primeprowork.com/blog/category/{{ cat.slug }}/"/>
+    <priority>0.4</priority>
+  </url>
+{%- endfor %}
+{%- for cat in categoryPages.es %}
+  <url>
+    <loc>https://primeprowork.com/es/blog/categoria/{{ cat.slug }}/</loc>
+{%- if cat.has_en %}
+    <xhtml:link rel="alternate" hreflang="en" href="https://primeprowork.com/blog/category/{{ cat.slug }}/"/>
+{%- endif %}
+    <xhtml:link rel="alternate" hreflang="es" href="https://primeprowork.com/es/blog/categoria/{{ cat.slug }}/"/>
+{%- if cat.has_en %}
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://primeprowork.com/blog/category/{{ cat.slug }}/"/>
+{%- else %}
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://primeprowork.com/es/blog/categoria/{{ cat.slug }}/"/>
+{%- endif %}
+    <priority>0.4</priority>
+  </url>
+{%- endfor %}
 </urlset>

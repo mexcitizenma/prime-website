@@ -5,6 +5,11 @@ __pycache__/
 _debug/
 .wrangler/
 
+# Salesforce CLI org cache -- unrelated to this project, can appear if the
+# `sf` CLI is ever run from this directory by mistake (e.g. a terminal left
+# open in the wrong folder during CaseAssist/Salesforce work).
+.sf/
+
 # macOS Finder metadata. Tracking these produced spurious diffs on every
 # folder you opened, and a dirty .DS_Store is enough to block a rebase or a
 # stash pop mid-pull.
