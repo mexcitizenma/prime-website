@@ -35,7 +35,7 @@
   <div class="blog-aside__card blog-aside__card--cta">
     <h2 class="blog-aside__title">{{ "¿Tiene un proyecto en mente?" if es else "Have a project in mind?" }}</h2>
     <p>{{ "Estimados gratis en todo el oeste de Massachusetts." if es else "Free estimates across Western Massachusetts." }}</p>
-    <a class="btn btn--gold" href="{{ "/es/contact.html" if es else "/contact.html" }}#estimate-form">{{ "Pedir Estimado" if es else "Get an Estimate" }}</a>
+    <a class="btn btn--gold" href="{{ "/es/contact" if es else "/contact" }}#estimate-form">{{ "Pedir Estimado" if es else "Get an Estimate" }}</a>
   </div>
 </aside>
 {% endmacro %}
@@ -97,7 +97,7 @@
 <aside class="blog-cta-inline">
   <p>{{ "¿Prefiere que lo haga alguien con experiencia? Le damos un estimado gratis, sin compromiso." if es else "Rather hand this one to a crew that does it every day? Free estimate, no pressure." }}</p>
   <div class="btn-row">
-    <a class="btn btn--gold" href="{{ "/es/contact.html" if es else "/contact.html" }}#estimate-form">{{ "Solicite un Estimado Gratis" if es else "Get a Free Estimate" }}</a>
+    <a class="btn btn--gold" href="{{ "/es/contact" if es else "/contact" }}#estimate-form">{{ "Solicite un Estimado Gratis" if es else "Get a Free Estimate" }}</a>
     <a class="btn btn--outline" href="sms:+14134860396">{{ "Texto al 413-486-0396" if es else "Text 413-486-0396" }}</a>
   </div>
 </aside>

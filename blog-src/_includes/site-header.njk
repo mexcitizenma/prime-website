@@ -21,10 +21,10 @@
     <nav class="site-nav" id="site-nav" aria-label="{{ "Principal" if es else "Main" }}">
       <ul>
         <li><a href="{{ base }}">{{ "Inicio" if es else "Home" }}</a></li>
-        <li><a href="{{ base }}services.html">{{ "Servicios" if es else "Services" }}</a></li>
-        <li><a href="{{ base }}gallery.html">{{ "Galería" if es else "Gallery" }}</a></li>
+        <li><a href="{{ base }}services">{{ "Servicios" if es else "Services" }}</a></li>
+        <li><a href="{{ base }}gallery">{{ "Galería" if es else "Gallery" }}</a></li>
         <li><a href="{{ base }}blog/" aria-current="page">Blog</a></li>
-        <li><a href="{{ base }}contact.html">{{ "Contacto" if es else "Contact" }}</a></li>
+        <li><a href="{{ base }}contact">{{ "Contacto" if es else "Contact" }}</a></li>
         <li class="lang-switch">
           {% if es %}
             <a href="{{ en_url }}" lang="en" hreflang="en">EN</a>
