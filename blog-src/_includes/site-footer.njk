@@ -28,6 +28,13 @@
           <li><a href="https://m.me/PrimePaintHome" target="_blank" rel="noopener">Messenger</a></li>
         </ul>
       </div>
+      <div>
+        <h4>Legal</h4>
+        <ul>
+          <li><a href="{{ base }}terms.html">{{ "Términos de Servicio" if es else "Terms of Service" }}</a></li>
+          <li><a href="{{ base }}privacy.html">{{ "Política de Privacidad" if es else "Privacy Policy" }}</a></li>
+        </ul>
+      </div>
     </div>
     <div class="footer__bottom">
       <p class="footer__disclaimer">{{ "Los artículos del blog son información general para casas del oeste de Massachusetts. Cada casa es distinta: confirme permisos, códigos locales e instrucciones del fabricante antes de empezar cualquier trabajo. Los precios mencionados son rangos aproximados, no un estimado." if es else "Blog articles are general information for Western Massachusetts homes. Every house is different — confirm permits, local code and manufacturer instructions before starting any work. Any prices mentioned are ballpark ranges, not a quote." }}</p>
