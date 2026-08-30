@@ -1,0 +1,66 @@
+---
+permalink: /sitemap.xml
+eleventyExcludeFromCollections: true
+---
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+        xmlns:xhtml="http://www.w3.org/1999/xhtml">
+{%- set staticPages = [
+  {"path": "", "priority": "1.0"},
+  {"path": "services.html", "priority": "0.9"},
+  {"path": "contact.html", "priority": "0.9"},
+  {"path": "gallery.html", "priority": "0.7"},
+  {"path": "terms.html", "priority": "0.3"},
+  {"path": "privacy.html", "priority": "0.3"}
+] %}
+{%- for page in staticPages %}
+  <url>
+    <loc>https://primeprowork.com/{{ page.path }}</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://primeprowork.com/{{ page.path }}"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://primeprowork.com/es/{{ page.path }}"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://primeprowork.com/{{ page.path }}"/>
+    <priority>{{ page.priority }}</priority>
+  </url>
+  <url>
+    <loc>https://primeprowork.com/es/{{ page.path }}</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://primeprowork.com/{{ page.path }}"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://primeprowork.com/es/{{ page.path }}"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://primeprowork.com/{{ page.path }}"/>
+    <priority>{{ page.priority }}</priority>
+  </url>
+{%- endfor %}
+  <url>
+    <loc>https://primeprowork.com/blog/</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://primeprowork.com/blog/"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://primeprowork.com/es/blog/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://primeprowork.com/blog/"/>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://primeprowork.com/es/blog/</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://primeprowork.com/blog/"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://primeprowork.com/es/blog/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://primeprowork.com/blog/"/>
+    <priority>0.6</priority>
+  </url>
+{%- for post in collections.blog_en %}
+  <url>
+    <loc>https://primeprowork.com/blog/{{ post.data.slug }}/</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://primeprowork.com/blog/{{ post.data.slug }}/"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://primeprowork.com/es/blog/{{ post.data.slug }}/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://primeprowork.com/blog/{{ post.data.slug }}/"/>
+    <lastmod>{{ post.data.date_iso or post.data.date }}</lastmod>
+    <priority>0.5</priority>
+  </url>
+{%- endfor %}
+{%- for post in collections.blog_es %}
+  <url>
+    <loc>https://primeprowork.com/es/blog/{{ post.data.slug }}/</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://primeprowork.com/blog/{{ post.data.slug }}/"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://primeprowork.com/es/blog/{{ post.data.slug }}/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://primeprowork.com/blog/{{ post.data.slug }}/"/>
+    <lastmod>{{ post.data.date_iso or post.data.date }}</lastmod>
+    <priority>0.5</priority>
+  </url>
+{%- endfor %}
+</urlset>

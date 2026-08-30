@@ -16,6 +16,7 @@
 
 /blog                 /_site/blog/                    200
 /es/blog              /_site/es/blog/                 200
+/sitemap.xml          /_site/sitemap.xml              200
 
 /es/blog/*            /_site/es/blog/:splat           200
 /blog/*               /_site/blog/:splat              200
