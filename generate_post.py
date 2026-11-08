@@ -11,6 +11,7 @@ import argparse
 import json
 import os
 import re
+import sys
 import time
 from datetime import datetime, timezone
 from pathlib import Path
@@ -480,7 +481,7 @@ def main():
         topic = pick_topic(topics)
         if not topic:
             print("No topics remaining.")
-            return
+            sys.exit(1)
         published = write_topic(topic, published, force=args.force, langs=langs)
 
     bp.save_published(published)

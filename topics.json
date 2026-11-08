@@ -376,5 +376,425 @@
     "category": "fence",
     "season": "all",
     "type": "signs"
+  },
+  {
+    "en": "How to Paint Over Wallpaper: What Western Mass Homeowners Should Know",
+    "es": "Cómo pintar sobre papel tapiz: lo que debes saber en el oeste de Massachusetts",
+    "category": "interior-painting",
+    "season": "all",
+    "type": "guide"
+  },
+  {
+    "en": "Best Paint Sheens for Walls, Trim and Ceilings",
+    "es": "Los mejores acabados de pintura para paredes, molduras y techos",
+    "category": "interior-painting",
+    "season": "all",
+    "type": "guide"
+  },
+  {
+    "en": "How to Prep Walls Before Painting: Patching, Sanding and Cleaning",
+    "es": "Cómo preparar las paredes antes de pintar: reparar, lijar y limpiar",
+    "category": "interior-painting",
+    "season": "all",
+    "type": "guide"
+  },
+  {
+    "en": "Low-VOC Paint: Is It Worth It for Your Home?",
+    "es": "Pintura de bajo COV: ¿vale la pena para tu hogar?",
+    "category": "interior-painting",
+    "season": "all",
+    "type": "guide"
+  },
+  {
+    "en": "How Much Does Interior Painting Cost for a Whole House in Western Massachusetts?",
+    "es": "¿Cuánto cuesta pintar el interior de toda una casa en el oeste de Massachusetts?",
+    "category": "interior-painting",
+    "season": "all",
+    "type": "cost"
+  },
+  {
+    "en": "5 Signs Your Interior Walls Need Repainting",
+    "es": "5 señales de que las paredes interiores necesitan pintura",
+    "category": "interior-painting",
+    "season": "all",
+    "type": "signs"
+  },
+  {
+    "en": "6 Common Interior Painting Mistakes and How to Avoid Them",
+    "es": "6 errores comunes al pintar interiores y cómo evitarlos",
+    "category": "interior-painting",
+    "season": "all",
+    "type": "mistakes"
+  },
+  {
+    "en": "Interior Painting Before the Holidays: How Far Ahead Should You Book?",
+    "es": "Pintura interior antes de las fiestas: ¿con cuánta anticipación debes reservar?",
+    "category": "interior-painting",
+    "season": "fall",
+    "type": "guide"
+  },
+  {
+    "en": "How to Choose Exterior Paint Colors for New England Homes",
+    "es": "Cómo elegir los colores de pintura exterior para casas de Nueva Inglaterra",
+    "category": "exterior-painting",
+    "season": "all",
+    "type": "guide"
+  },
+  {
+    "en": "Painting Trim, Doors and Shutters: Small Updates That Boost Curb Appeal",
+    "es": "Pintar molduras, puertas y contraventanas: pequeños cambios que mejoran la fachada",
+    "category": "exterior-painting",
+    "season": "all",
+    "type": "guide"
+  },
+  {
+    "en": "Oil-Based vs. Latex Exterior Paint: Which Is Better?",
+    "es": "Pintura exterior al aceite vs. látex: ¿cuál es mejor?",
+    "category": "exterior-painting",
+    "season": "all",
+    "type": "vs"
+  },
+  {
+    "en": "Exterior Painting Prep Steps You Shouldn't Skip",
+    "es": "Pasos de preparación para pintar el exterior que no debes omitir",
+    "category": "exterior-painting",
+    "season": "all",
+    "type": "guide"
+  },
+  {
+    "en": "Lead Paint and Older Homes: What to Know Before Repainting in Massachusetts",
+    "es": "Pintura con plomo y casas antiguas: lo que debes saber antes de repintar en Massachusetts",
+    "category": "exterior-painting",
+    "season": "all",
+    "type": "guide"
+  },
+  {
+    "en": "How to Choose the Right Paint for Kitchen Cabinets",
+    "es": "Cómo elegir la pintura adecuada para gabinetes de cocina",
+    "category": "cabinet-painting",
+    "season": "all",
+    "type": "guide"
+  },
+  {
+    "en": "How Long Does a Painted Kitchen Cabinet Finish Last?",
+    "es": "¿Cuánto dura el acabado de gabinetes de cocina pintados?",
+    "category": "cabinet-painting",
+    "season": "all",
+    "type": "guide"
+  },
+  {
+    "en": "Sprayed vs. Brushed Cabinet Finishes: What's the Difference?",
+    "es": "Gabinetes pintados a pistola vs. a brocha: ¿cuál es la diferencia?",
+    "category": "cabinet-painting",
+    "season": "all",
+    "type": "vs"
+  },
+  {
+    "en": "Painting Bathroom Vanities: A Budget-Friendly Update",
+    "es": "Pintar tocadores de baño: una renovación económica",
+    "category": "cabinet-painting",
+    "season": "all",
+    "type": "guide"
+  },
+  {
+    "en": "5 Signs Your Kitchen Cabinets Are Ready for a Fresh Coat",
+    "es": "5 señales de que tus gabinetes de cocina necesitan una nueva capa de pintura",
+    "category": "cabinet-painting",
+    "season": "all",
+    "type": "signs"
+  },
+  {
+    "en": "Best Cabinet Colors for Western Massachusetts Kitchens",
+    "es": "Los mejores colores de gabinetes para cocinas del oeste de Massachusetts",
+    "category": "cabinet-painting",
+    "season": "all",
+    "type": "guide"
+  },
+  {
+    "en": "How to Prepare a Concrete Floor for Epoxy Coating",
+    "es": "Cómo preparar un piso de concreto para aplicar epoxi",
+    "category": "epoxy-floors",
+    "season": "all",
+    "type": "guide"
+  },
+  {
+    "en": "Epoxy Basement Floors: Moisture, Prep and What to Expect",
+    "es": "Pisos de epoxi para sótanos: humedad, preparación y qué esperar",
+    "category": "epoxy-floors",
+    "season": "all",
+    "type": "guide"
+  },
+  {
+    "en": "Epoxy Floor Maintenance: How to Keep Your Garage Floor Looking New",
+    "es": "Mantenimiento de pisos de epoxi: cómo conservar tu garaje como nuevo",
+    "category": "epoxy-floors",
+    "season": "all",
+    "type": "guide"
+  },
+  {
+    "en": "5 Epoxy Garage Floor Mistakes That Cause Peeling",
+    "es": "5 errores en pisos de garaje de epoxi que causan desprendimiento",
+    "category": "epoxy-floors",
+    "season": "all",
+    "type": "mistakes"
+  },
+  {
+    "en": "Epoxy Flake Finishes: Choosing the Right Look and Grip for Your Garage",
+    "es": "Acabados de epoxi con escamas: cómo elegir el aspecto y la tracción de tu garaje",
+    "category": "epoxy-floors",
+    "season": "all",
+    "type": "guide"
+  },
+  {
+    "en": "Laminate vs. Luxury Vinyl Plank: Which Is Better for Massachusetts Homes?",
+    "es": "Piso laminado vs. vinilo de lujo en tablones: ¿cuál es mejor para casas en Massachusetts?",
+    "category": "laminate-flooring",
+    "season": "all",
+    "type": "vs"
+  },
+  {
+    "en": "How Much Does Laminate Flooring Installation Cost in Western Massachusetts?",
+    "es": "¿Cuánto cuesta instalar piso laminado en el oeste de Massachusetts?",
+    "category": "laminate-flooring",
+    "season": "all",
+    "type": "cost"
+  },
+  {
+    "en": "How to Prepare Your Subfloor Before Installing Laminate",
+    "es": "Cómo preparar el contrapiso antes de instalar piso laminado",
+    "category": "laminate-flooring",
+    "season": "all",
+    "type": "guide"
+  },
+  {
+    "en": "Laminate Flooring in Basements: Does It Work?",
+    "es": "Piso laminado en sótanos: ¿funciona?",
+    "category": "laminate-flooring",
+    "season": "all",
+    "type": "guide"
+  },
+  {
+    "en": "5 Common Laminate Flooring Installation Mistakes",
+    "es": "5 errores comunes al instalar piso laminado",
+    "category": "laminate-flooring",
+    "season": "all",
+    "type": "mistakes"
+  },
+  {
+    "en": "Laminate Flooring Care: Cleaning and Maintenance Tips",
+    "es": "Cuidado del piso laminado: consejos de limpieza y mantenimiento",
+    "category": "laminate-flooring",
+    "season": "all",
+    "type": "guide"
+  },
+  {
+    "en": "How to Pressure Wash a Deck Without Damaging the Wood",
+    "es": "Cómo lavar a presión una terraza sin dañar la madera",
+    "category": "pressure-washing",
+    "season": "all",
+    "type": "guide"
+  },
+  {
+    "en": "Pressure Washing a Concrete Driveway: What Works and What to Avoid",
+    "es": "Lavado a presión de una entrada de concreto: qué funciona y qué evitar",
+    "category": "pressure-washing",
+    "season": "all",
+    "type": "guide"
+  },
+  {
+    "en": "How Often Should You Pressure Wash Your House?",
+    "es": "¿Cada cuánto debes lavar a presión tu casa?",
+    "category": "pressure-washing",
+    "season": "all",
+    "type": "guide"
+  },
+  {
+    "en": "5 Signs It's Time to Pressure Wash Your Home",
+    "es": "5 señales de que es hora de lavar a presión tu casa",
+    "category": "pressure-washing",
+    "season": "all",
+    "type": "signs"
+  },
+  {
+    "en": "Pressure Washing Before Painting: Why Clean Surfaces Matter",
+    "es": "Lavado a presión antes de pintar: por qué importan las superficies limpias",
+    "category": "pressure-washing",
+    "season": "all",
+    "type": "guide"
+  },
+  {
+    "en": "Vinyl Siding Cleaning: Safe Methods That Won't Cause Damage",
+    "es": "Limpieza de revestimiento de vinilo: métodos seguros que no lo dañan",
+    "category": "siding-cleaning",
+    "season": "all",
+    "type": "guide"
+  },
+  {
+    "en": "Mold vs. Mildew vs. Algae on Siding: How to Tell the Difference",
+    "es": "Moho, hongos y algas en el revestimiento: cómo distinguirlos",
+    "category": "siding-cleaning",
+    "season": "all",
+    "type": "guide"
+  },
+  {
+    "en": "How Much Does Siding Cleaning Cost in Western Massachusetts?",
+    "es": "¿Cuánto cuesta limpiar el revestimiento de una casa en el oeste de Massachusetts?",
+    "category": "siding-cleaning",
+    "season": "all",
+    "type": "cost"
+  },
+  {
+    "en": "Soft Washing vs. DIY Siding Cleaning: Which Is Worth It?",
+    "es": "Lavado suave vs. limpieza casera del revestimiento: ¿qué conviene más?",
+    "category": "siding-cleaning",
+    "season": "all",
+    "type": "vs"
+  },
+  {
+    "en": "Wood Siding Maintenance in New England: Cleaning, Sealing and Painting",
+    "es": "Mantenimiento de revestimiento de madera en Nueva Inglaterra: limpieza, sellado y pintura",
+    "category": "siding-cleaning",
+    "season": "all",
+    "type": "guide"
+  },
+  {
+    "en": "How to Stain a Wood Fence: A Step-by-Step Guide for New England Homeowners",
+    "es": "Cómo teñir una cerca de madera: guía paso a paso para propietarios en Nueva Inglaterra",
+    "category": "fence",
+    "season": "all",
+    "type": "guide"
+  },
+  {
+    "en": "How Much Does Fence Painting or Staining Cost in Western Massachusetts?",
+    "es": "¿Cuánto cuesta pintar o teñir una cerca en el oeste de Massachusetts?",
+    "category": "fence",
+    "season": "all",
+    "type": "cost"
+  },
+  {
+    "en": "Best Fence Stain Colors and Finishes for New England Homes",
+    "es": "Los mejores colores y acabados de tinte para cercas en Nueva Inglaterra",
+    "category": "fence",
+    "season": "all",
+    "type": "guide"
+  },
+  {
+    "en": "5 Fence Staining Mistakes That Shorten the Life of Your Wood",
+    "es": "5 errores al teñir cercas que acortan la vida de la madera",
+    "category": "fence",
+    "season": "all",
+    "type": "mistakes"
+  },
+  {
+    "en": "Small Home Repairs You Shouldn't Put Off",
+    "es": "Pequeñas reparaciones del hogar que no debes posponer",
+    "category": "handyman",
+    "season": "all",
+    "type": "guide"
+  },
+  {
+    "en": "Drywall Repair: Patching Holes, Cracks and Dents Before Painting",
+    "es": "Reparación de paneles de yeso: cómo tapar agujeros, grietas y abolladuras antes de pintar",
+    "category": "handyman",
+    "season": "all",
+    "type": "guide"
+  },
+  {
+    "en": "How to Fix Peeling Paint: Causes and Repairs",
+    "es": "Cómo arreglar la pintura que se despega: causas y reparaciones",
+    "category": "handyman",
+    "season": "all",
+    "type": "guide"
+  },
+  {
+    "en": "Weatherstripping Doors and Windows Before the Cold Sets In",
+    "es": "Burletes en puertas y ventanas antes de que llegue el frío",
+    "category": "handyman",
+    "season": "fall",
+    "type": "guide"
+  },
+  {
+    "en": "Preventing Ice Dams: Practical Steps for Western Mass Homeowners",
+    "es": "Cómo prevenir las represas de hielo: pasos prácticos para propietarios en el oeste de Massachusetts",
+    "category": "handyman",
+    "season": "winter",
+    "type": "guide"
+  },
+  {
+    "en": "TV Mounting 101: How to Mount a TV Safely on Drywall",
+    "es": "Montaje de TV 101: cómo instalar un televisor de forma segura en paneles de yeso",
+    "category": "handyman",
+    "season": "all",
+    "type": "guide"
+  },
+  {
+    "en": "How to Prepare Your Home for Painters: A Simple Checklist",
+    "es": "Cómo preparar tu casa para los pintores: una lista sencilla",
+    "category": "general",
+    "season": "all",
+    "type": "checklist"
+  },
+  {
+    "en": "How to Read a Painting Estimate: What a Good Quote Should Include",
+    "es": "Cómo leer un presupuesto de pintura: qué debe incluir una buena cotización",
+    "category": "general",
+    "season": "all",
+    "type": "guide"
+  },
+  {
+    "en": "Home Improvement Projects That Boost Resale Value in Western Massachusetts",
+    "es": "Proyectos de mejoras del hogar que aumentan el valor de reventa en el oeste de Massachusetts",
+    "category": "general",
+    "season": "all",
+    "type": "guide"
+  },
+  {
+    "en": "Holiday Home Prep: Refresh Your Home Before Guests Arrive",
+    "es": "Preparar la casa para las fiestas: renueva tu hogar antes de que lleguen los invitados",
+    "category": "general",
+    "season": "winter",
+    "type": "checklist"
+  },
+  {
+    "en": "How to Plan a Multi-Service Home Project: Painting, Flooring and Repairs in One Visit",
+    "es": "Cómo planificar un proyecto del hogar con varios servicios: pintura, pisos y reparaciones en una sola visita",
+    "category": "general",
+    "season": "all",
+    "type": "guide"
+  },
+  {
+    "en": "Is It Too Early to Paint Outside? Spring Temperature Rules for Western Massachusetts",
+    "es": "¿Es muy pronto para pintar al aire libre? Reglas de temperatura en primavera para el oeste de Massachusetts",
+    "category": "exterior-painting",
+    "season": "spring",
+    "type": "guide"
+  },
+  {
+    "en": "Humidity and Exterior Painting: Avoiding Blisters and Slow Drying in Summer",
+    "es": "Humedad y pintura exterior: cómo evitar ampollas y secado lento en verano",
+    "category": "exterior-painting",
+    "season": "summer",
+    "type": "guide"
+  },
+  {
+    "en": "Deck Winterization: Cleaning and Sealing Before Snow",
+    "es": "Preparar la terraza para el invierno: limpieza y sellado antes de la nieve",
+    "category": "fence",
+    "season": "fall",
+    "type": "guide"
+  },
+  {
+    "en": "Protecting Concrete Steps and Walkways from Road Salt",
+    "es": "Cómo proteger escalones y caminos de concreto de la sal de las carreteras",
+    "category": "handyman",
+    "season": "winter",
+    "type": "guide"
+  },
+  {
+    "en": "Spring Painting Prep Timeline: What to Do in March and April",
+    "es": "Cronograma de preparación para pintar en primavera: qué hacer en marzo y abril",
+    "category": "general",
+    "season": "spring",
+    "type": "checklist"
   }
 ]
